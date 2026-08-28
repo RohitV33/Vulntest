@@ -126,7 +126,15 @@ export async function assertSafeUrl(input) {
   }
 
   const [v4, v6] = await Promise.all([resolveAll(hostname, 4), resolveAll(hostname, 6)]);
-  const addresses = [...v4, ...v6];
+  let addresses = [...v4, ...v6];
+  if (addresses.length === 0) {
+    try {
+      const lookupResult = await dns.promises.lookup(hostname, { all: true });
+      addresses = lookupResult.map((entry) => entry.address);
+    } catch {
+      // both dns.resolve and dns.lookup failed
+    }
+  }
   if (addresses.length === 0 && privateTargetsAllowed()) {
     // A private-network name may only resolve through the OS resolver
     // (/etc/hosts, mDNS), which dns.resolve does not consult.
