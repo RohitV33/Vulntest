@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { ScanLauncher } from '../components/ScanLauncher.jsx';
 import { ConfigDialog } from '../components/ConfigDialog.jsx';
 import { ProgressPanel } from '../components/ProgressPanel.jsx';
@@ -39,8 +39,11 @@ const FALLBACK_LIMITS = {
 };
 
 export function DashboardPage() {
-  const [target, setTarget] = useState('');
-  const [authorized, setAuthorized] = useState(false);
+  const [searchParams] = useSearchParams();
+  const initialTarget = searchParams.get('target') || '';
+
+  const [target, setTarget] = useState(initialTarget);
+  const [authorized, setAuthorized] = useState(Boolean(initialTarget));
   const [config, setConfig] = useState(() => loadSettings(FALLBACK_CONFIG));
   const [limits, setLimits] = useState(FALLBACK_LIMITS);
   const [privateTargetsAllowed, setPrivateTargetsAllowed] = useState(false);
@@ -60,6 +63,15 @@ export function DashboardPage() {
   const { scan, connected, streamError, finished, refresh } = useScanStream(activeScanId);
   const { save, quotaWarning } = useScanHistory();
   const savedRef = useRef(new Set());
+
+  // Listen to search param updates
+  useEffect(() => {
+    const urlTarget = searchParams.get('target');
+    if (urlTarget) {
+      setTarget(urlTarget);
+      setAuthorized(true);
+    }
+  }, [searchParams]);
 
   // Publish the server's real limits so the config dialog cannot offer more.
   useEffect(() => {
@@ -143,15 +155,13 @@ export function DashboardPage() {
 
   const onFindingStatusChange = (findingId, status) => {
     setStatusOverrides((previous) => ({ ...previous, [findingId]: status }));
-    // A finished scan is already in localStorage, so triage has to be written
-    // through - the save-once effect will not run again for it.
     if (finished && scan?.id) updateFindingStatus(scan.id, findingId, status);
   };
 
   const running = Boolean(scan) && !finished;
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6 animate-fade-in">
       <ScanLauncher
         target={target}
         onTargetChange={setTarget}
@@ -167,12 +177,10 @@ export function DashboardPage() {
       />
 
       {privateTargetsAllowed ? (
-        <Card className="border-sev-medium/40">
+        <Card className="border-sev-medium/40 bg-sev-medium/5">
           <p className="text-xs text-ink-2">
             <span className="font-medium text-ink">Private targets are enabled on this backend.</span>{' '}
-            ALLOW_PRIVATE_TARGETS is set, so localhost and private network addresses can be scanned. That is useful
-            for testing your own app in development, and unsafe anywhere someone else can reach this API - the
-            backend can then be used to reach internal hosts. Unset it before deploying.
+            ALLOW_PRIVATE_TARGETS is set, so localhost and private network addresses can be scanned.
           </p>
         </Card>
       ) : null}
@@ -190,25 +198,43 @@ export function DashboardPage() {
       ) : null}
 
       {scan ? (
-        <>
+        <div className="space-y-6 animate-slide-up">
           <ProgressPanel scan={scan} connected={connected} streamError={streamError} />
           <ScanResults
             scan={{ ...scan, findings: findingsWithStatus }}
             onFindingStatusChange={onFindingStatusChange}
           />
-        </>
+        </div>
       ) : (
-        <Card>
-          <EmptyState
-            title="No scan running"
-            description="Enter a URL you are authorized to test and start a scan. The crawler maps the site, then safe checks run against the parameters it found - reflection analysis for XSS, read-only comparisons for SQL injection and path traversal, plus passive header and cookie checks."
-            action={
-              <Link to="/history" className="mt-2 text-xs text-accent underline underline-offset-2">
-                Open a previous scan
-              </Link>
-            }
-          />
-        </Card>
+        <div className="rounded-2xl border border-line bg-surface-1 p-8 text-center shadow-xs">
+          <div className="mx-auto grid h-12 w-12 place-items-center rounded-2xl bg-accent/10 text-accent mb-4">
+            <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="1.8">
+              <circle cx="12" cy="12" r="10" />
+              <line x1="12" y1="8" x2="12" y2="12" />
+              <line x1="12" y1="16" x2="12.01" y2="16" />
+            </svg>
+          </div>
+          <h3 className="text-base font-bold text-ink">Ready for Security Assessment</h3>
+          <p className="mx-auto mt-2 max-w-lg text-xs leading-relaxed text-ink-2">
+            Enter any authorized target above or select a preset pill like{' '}
+            <strong className="text-ink">Acunetix PHP Testbed</strong> to begin. The crawler will map endpoints and
+            execute safe, non-destructive vulnerability checks.
+          </p>
+          <div className="mt-4 flex items-center justify-center gap-3">
+            <Link
+              to="/history"
+              className="inline-flex items-center gap-1.5 rounded-lg border border-line bg-surface-2 px-3 py-1.5 text-xs font-semibold text-ink hover:border-accent hover:text-accent transition-colors"
+            >
+              Open Previous Scans
+            </Link>
+            <Link
+              to="/about"
+              className="inline-flex items-center gap-1.5 rounded-lg border border-line bg-surface-2 px-3 py-1.5 text-xs font-semibold text-ink hover:border-accent hover:text-accent transition-colors"
+            >
+              Learn How Checks Stay Safe
+            </Link>
+          </div>
+        </div>
       )}
 
       <ConfigDialog
