@@ -9,7 +9,15 @@ const SEV_CONFIG = {
   info:     { label: 'Info',     className: 'badge-info' },
 };
 
-function ScoreRing({ score }) {
+function ScoreRing({ score, isIncomplete }) {
+  if (isIncomplete) {
+    return (
+      <div className="w-24 h-24 rounded-full border-4 border-dashed border-border-subtle flex items-center justify-center text-ink-muted font-bold text-xl">
+        N/A
+      </div>
+    );
+  }
+
   const r = 36;
   const circ = 2 * Math.PI * r;
   const dash = (score / 100) * circ;
@@ -45,6 +53,11 @@ export function ScanResults({ scan, onFindingStatusChange }) {
   const [filter, setFilter] = useState('all');
   const findings = scan.findings || [];
 
+  // Check if scan timed out or failed to reach the server
+  const pagesCrawled = scan.statistics?.pages || 0;
+  const hasTimeoutError = Boolean(scan.error && scan.error.includes('timeout'));
+  const isIncomplete = (scan.status === 'failed' || hasTimeoutError) && pagesCrawled <= 1 && findings.length === 0;
+
   const changeStatus = (findingId, status) => {
     onFindingStatusChange?.(findingId, status);
     setSelected(prev => prev?.id === findingId ? { ...prev, status } : prev);
@@ -67,7 +80,7 @@ export function ScanResults({ scan, onFindingStatusChange }) {
     low:      findings.filter(f => f.severity === 'low').length,
   };
 
-  const score = Math.max(0, 100 - (
+  const score = isIncomplete ? 0 : Math.max(0, 100 - (
     severityCounts.critical * 15 +
     severityCounts.high     * 10 +
     severityCounts.medium   *  5 +
@@ -78,14 +91,31 @@ export function ScanResults({ scan, onFindingStatusChange }) {
 
   return (
     <div className="space-y-5">
+      {/* Incomplete / Timeout Warning Banner */}
+      {isIncomplete && (
+        <div className="p-5 rounded-2xl bg-yellow-500/10 border border-yellow-500/25 text-yellow-800 dark:text-yellow-300 flex items-start gap-3">
+          <svg className="w-5 h-5 shrink-0 mt-0.5 text-yellow-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+            <path d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+          <div>
+            <p className="text-xs font-bold uppercase tracking-wider">Target Connection Timed Out</p>
+            <p className="text-xs mt-1 leading-relaxed opacity-90">
+              The target server <span className="font-mono font-bold">{scan.target}</span> did not respond within the timeout limit. The crawler could not discover pages to test. Score is marked <strong>N/A (Inconclusive)</strong>.
+            </p>
+          </div>
+        </div>
+      )}
+
       {/* Score + meta card */}
-      <div className="bg-surface-card border border-border-subtle rounded-2xl overflow-hidden">
+      <div className="bg-surface-card border border-border-subtle rounded-2xl overflow-hidden shadow-xs">
         <div className="p-6">
           <div className="flex flex-col md:flex-row md:items-center gap-6">
             {/* Score ring */}
             <div className="shrink-0 flex flex-col items-center gap-2">
-              <ScoreRing score={score} />
-              <p className="text-[10px] uppercase tracking-widest text-ink-secondary font-bold">Security Score</p>
+              <ScoreRing score={score} isIncomplete={isIncomplete} />
+              <p className="text-[10px] uppercase tracking-widest text-ink-secondary font-bold">
+                {isIncomplete ? 'Inconclusive' : 'Security Score'}
+              </p>
             </div>
 
             {/* Severity breakdown */}
@@ -134,10 +164,10 @@ export function ScanResults({ scan, onFindingStatusChange }) {
       </div>
 
       {/* Findings table */}
-      <div className="bg-surface-card border border-border-subtle rounded-2xl overflow-hidden">
+      <div className="bg-surface-card border border-border-subtle rounded-2xl overflow-hidden shadow-xs">
         <div className="px-6 py-4 border-b border-border-subtle flex items-center justify-between">
           <h3 className="text-sm font-bold text-ink-primary">
-            Findings
+            Findings ({findings.length})
             {filter !== 'all' && (
               <span className="ml-2 text-[10px] font-semibold text-ink-secondary uppercase">
                 — {filter} only
@@ -153,17 +183,35 @@ export function ScanResults({ scan, onFindingStatusChange }) {
 
         {filtered.length === 0 ? (
           <div className="py-16 text-center">
-            <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 flex items-center justify-center mx-auto mb-3">
-              <svg className="w-6 h-6 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                <path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0 1 12 2.944a11.955 11.955 0 0 1-8.618 3.04A12.02 12.02 0 0 0 3 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" strokeLinecap="round"/>
-              </svg>
-            </div>
-            <p className="text-sm font-semibold text-ink-primary mb-1">
-              {filter === 'all' ? 'No vulnerabilities found' : `No ${filter} findings`}
-            </p>
-            <p className="text-xs text-ink-secondary">
-              {filter === 'all' ? 'This target passed all security checks.' : 'Try adjusting the severity filter.'}
-            </p>
+            {isIncomplete ? (
+              <>
+                <div className="w-12 h-12 rounded-2xl bg-yellow-500/10 flex items-center justify-center mx-auto mb-3 text-yellow-600">
+                  <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                    <circle cx="12" cy="12" r="10"/><path d="M12 8v4m0 4h.01" strokeLinecap="round"/>
+                  </svg>
+                </div>
+                <p className="text-sm font-semibold text-ink-primary mb-1">
+                  Scan Incomplete (Target Unreachable)
+                </p>
+                <p className="text-xs text-ink-secondary max-w-sm mx-auto">
+                  The target timed out during crawl. Check your internet connection or try again.
+                </p>
+              </>
+            ) : (
+              <>
+                <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 flex items-center justify-center mx-auto mb-3">
+                  <svg className="w-6 h-6 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                    <path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0 1 12 2.944a11.955 11.955 0 0 1-8.618 3.04A12.02 12.02 0 0 0 3 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" strokeLinecap="round"/>
+                  </svg>
+                </div>
+                <p className="text-sm font-semibold text-ink-primary mb-1">
+                  {filter === 'all' ? 'No vulnerabilities found' : `No ${filter} findings`}
+                </p>
+                <p className="text-xs text-ink-secondary">
+                  {filter === 'all' ? 'This target passed all active & passive security checks.' : 'Try adjusting the severity filter.'}
+                </p>
+              </>
+            )}
           </div>
         ) : (
           <div className="overflow-x-auto">

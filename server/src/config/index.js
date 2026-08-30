@@ -68,7 +68,7 @@ export const DEFAULT_SCAN_CONFIG = {
   maxPages: 100,
   maxDepth: 3,
   concurrency: 2,
-  requestTimeoutMs: 10_000,
+  requestTimeoutMs: 25_000,
   delayMs: 250,
   maxRequests: 1_500,
   maxScanDurationMs: 10 * 60_000,
