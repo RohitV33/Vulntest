@@ -9,45 +9,6 @@ const SEV_CONFIG = {
   info:     { label: 'Info',     className: 'badge-info' },
 };
 
-function ScoreRing({ score, isIncomplete }) {
-  if (isIncomplete) {
-    return (
-      <div className="w-24 h-24 rounded-full border-4 border-dashed border-border-subtle flex items-center justify-center text-ink-muted font-bold text-xl">
-        N/A
-      </div>
-    );
-  }
-
-  const r = 36;
-  const circ = 2 * Math.PI * r;
-  const dash = (score / 100) * circ;
-  const color = score >= 80 ? '#10B981' : score >= 50 ? '#F59E0B' : '#EF4444';
-
-  return (
-    <svg width="96" height="96" viewBox="0 0 96 96" className="rotate-[-90deg]">
-      <circle cx="48" cy="48" r={r} fill="none" stroke="currentColor" strokeWidth="6" className="text-border-subtle" />
-      <circle
-        cx="48" cy="48" r={r}
-        fill="none" stroke={color} strokeWidth="6"
-        strokeDasharray={`${dash} ${circ}`}
-        strokeLinecap="round"
-        style={{ transition: 'stroke-dasharray 1s ease' }}
-      />
-      <text
-        x="48" y="56"
-        textAnchor="middle"
-        fontSize="20"
-        fontWeight="700"
-        fill="currentColor"
-        className="text-ink-primary rotate-90 origin-center"
-        style={{ transform: 'rotate(90deg)', transformOrigin: '48px 48px' }}
-      >
-        {score}
-      </text>
-    </svg>
-  );
-}
-
 export function ScanResults({ scan, onFindingStatusChange }) {
   const [selected, setSelected] = useState(null);
   const [filter, setFilter] = useState('all');
@@ -80,13 +41,6 @@ export function ScanResults({ scan, onFindingStatusChange }) {
     low:      findings.filter(f => f.severity === 'low').length,
   };
 
-  const score = isIncomplete ? 0 : Math.max(0, 100 - (
-    severityCounts.critical * 15 +
-    severityCounts.high     * 10 +
-    severityCounts.medium   *  5 +
-    severityCounts.low      *  2
-  ));
-
   const filtered = filter === 'all' ? findings : findings.filter(f => f.severity === filter);
 
   return (
@@ -100,31 +54,23 @@ export function ScanResults({ scan, onFindingStatusChange }) {
           <div>
             <p className="text-xs font-bold uppercase tracking-wider">Target Connection Timed Out</p>
             <p className="text-xs mt-1 leading-relaxed opacity-90">
-              The target server <span className="font-mono font-bold">{scan.target}</span> did not respond within the timeout limit. The crawler could not discover pages to test. Score is marked <strong>N/A (Inconclusive)</strong>.
+              The target server <span className="font-mono font-bold">{scan.target}</span> did not respond within the timeout limit. The crawler could not discover pages to test.
             </p>
           </div>
         </div>
       )}
 
-      {/* Score + meta card */}
+      {/* Target & Severity Overview card */}
       <div className="bg-surface-card border border-border-subtle rounded-2xl overflow-hidden shadow-xs">
         <div className="p-6">
-          <div className="flex flex-col md:flex-row md:items-center gap-6">
-            {/* Score ring */}
-            <div className="shrink-0 flex flex-col items-center gap-2">
-              <ScoreRing score={score} isIncomplete={isIncomplete} />
-              <p className="text-[10px] uppercase tracking-widest text-ink-secondary font-bold">
-                {isIncomplete ? 'Inconclusive' : 'Security Score'}
-              </p>
-            </div>
-
-            {/* Severity breakdown */}
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+            {/* Target and breakdown */}
             <div className="flex-1 space-y-3">
               <div>
                 <p className="text-[10px] font-bold uppercase tracking-wider text-ink-secondary mb-1">Target</p>
-                <p className="text-sm font-semibold text-ink-primary font-mono truncate">{scan.target}</p>
+                <p className="text-base font-bold text-ink-primary font-mono truncate">{scan.target}</p>
               </div>
-              <div className="grid grid-cols-4 gap-2">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                 {Object.entries(severityCounts).map(([sev, count]) => (
                   <div
                     key={sev}
@@ -139,10 +85,10 @@ export function ScanResults({ scan, onFindingStatusChange }) {
             </div>
 
             {/* Export actions */}
-            <div className="shrink-0 flex flex-col gap-2">
+            <div className="shrink-0 flex sm:flex-col gap-2">
               <button
                 onClick={handleExportJson}
-                className="flex items-center gap-2.5 px-4 py-2.5 border border-border-subtle text-ink-primary bg-surface-bg rounded-xl text-xs font-semibold hover:border-ink-secondary transition-colors"
+                className="flex items-center justify-center gap-2.5 px-4 py-2.5 border border-border-subtle text-ink-primary bg-surface-bg rounded-xl text-xs font-semibold hover:border-ink-secondary transition-colors"
               >
                 <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                   <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
@@ -151,7 +97,7 @@ export function ScanResults({ scan, onFindingStatusChange }) {
               </button>
               <button
                 onClick={() => window.print()}
-                className="flex items-center gap-2.5 px-4 py-2.5 border border-border-subtle text-ink-primary bg-surface-bg rounded-xl text-xs font-semibold hover:border-ink-secondary transition-colors"
+                className="flex items-center justify-center gap-2.5 px-4 py-2.5 border border-border-subtle text-ink-primary bg-surface-bg rounded-xl text-xs font-semibold hover:border-ink-secondary transition-colors"
               >
                 <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                   <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>
@@ -194,7 +140,7 @@ export function ScanResults({ scan, onFindingStatusChange }) {
                   Scan Incomplete (Target Unreachable)
                 </p>
                 <p className="text-xs text-ink-secondary max-w-sm mx-auto">
-                  The target timed out during crawl. Check your internet connection or try again.
+                  The target timed out during crawl. Check your target URL or try another demo target.
                 </p>
               </>
             ) : (
