@@ -231,12 +231,12 @@ export function ReportsPage() {
           </p>
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6">
             <h1 className="text-5xl sm:text-6xl font-black tracking-[-0.03em] text-ink-primary leading-[0.95]">
-              Your scan<br/>history.
+              Security Audit<br/>history.
             </h1>
             <Link to="/scanner"
               className="inline-flex items-center gap-2 bg-ink-primary text-surface-card px-6 py-3.5 rounded-full font-bold text-sm hover:opacity-90 transition-opacity whitespace-nowrap self-start sm:self-auto"
             >
-              + New scan
+              + New Audit
             </Link>
           </div>
         </motion.div>

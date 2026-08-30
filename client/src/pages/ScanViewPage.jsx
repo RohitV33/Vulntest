@@ -65,9 +65,9 @@ export function ScanViewPage() {
             <circle cx="12" cy="12" r="10"/><path d="M12 8v4m0 4h.01" strokeLinecap="round"/>
           </svg>
         </div>
-        <h2 className="text-xl font-bold text-ink-primary">Assessment Record Not Found</h2>
+        <h2 className="text-xl font-bold text-ink-primary">Audit Record Not Found</h2>
         <p className="text-xs text-ink-secondary max-w-sm mx-auto">
-          This scan was not found in your browser cache and may have expired from server memory.
+          This audit was not found in your browser cache and may have expired from server memory.
         </p>
         <Link
           to="/history"

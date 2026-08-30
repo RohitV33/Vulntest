@@ -18,14 +18,14 @@ export function HistoryPage() {
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-ink-secondary mb-1">Assessment Archive</p>
-          <h1 className="text-3xl font-black tracking-tight text-ink-primary">Reports & History</h1>
+          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-ink-secondary mb-1">Security Archive</p>
+          <h1 className="text-3xl font-black tracking-tight text-ink-primary">Audit Reports & History</h1>
         </div>
         <Link
           to="/scanner"
           className="inline-flex items-center gap-2 bg-ink-primary text-surface-card px-5 py-2.5 rounded-xl text-xs font-bold hover:opacity-90 transition-opacity self-start sm:self-auto"
         >
-          + New Scan
+          + New Audit
         </Link>
       </div>
 
@@ -33,7 +33,7 @@ export function HistoryPage() {
       
       <div className="bg-surface-card/60 border border-border-subtle rounded-2xl p-5 text-xs text-ink-secondary leading-relaxed">
         <span className="font-bold text-ink-primary">🔒 Local-First Privacy: </span>
-        All security assessment records are stored in this browser session (IndexedDB/localStorage) and are never sent to external servers. Clearing your browser storage will remove these records.
+        All security audit records are stored in this browser session (IndexedDB/localStorage) and are never sent to external servers. Clearing your browser storage will remove these records.
       </div>
     </div>
   );

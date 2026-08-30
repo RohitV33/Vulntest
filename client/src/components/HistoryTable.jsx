@@ -8,9 +8,9 @@ export function HistoryTable({ history = [], onDelete, onClear, bytes = 0 }) {
       {/* Header */}
       <div className="p-7 border-b border-border-subtle flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl font-bold text-ink-primary">Assessment History</h2>
+          <h2 className="text-xl font-bold text-ink-primary">Security Audit History</h2>
           <p className="text-xs text-ink-secondary mt-0.5">
-            {history.length} assessment{history.length === 1 ? '' : 's'} stored in browser sandbox · {(bytes / 1024).toFixed(0)} KB
+            {history.length} security audit{history.length === 1 ? '' : 's'} stored in browser session · {(bytes / 1024).toFixed(0)} KB
           </p>
         </div>
         {history.length > 0 && (
@@ -30,15 +30,15 @@ export function HistoryTable({ history = [], onDelete, onClear, bytes = 0 }) {
               <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5.586a1 1 0 0 1 .707.293l5.414 5.414a1 1 0 0 1 .293.707V19a2 2 0 0 1-2 2z" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
           </div>
-          <h3 className="text-base font-bold text-ink-primary">No scans recorded yet</h3>
+          <h3 className="text-base font-bold text-ink-primary">No audits recorded yet</h3>
           <p className="text-xs text-ink-secondary max-w-sm mx-auto mt-1 mb-5 leading-relaxed">
-            Completed security assessments are saved to this browser session automatically.
+            Completed security audits are saved to this browser session automatically.
           </p>
           <Link
             to="/scanner"
             className="inline-flex items-center gap-2 bg-ink-primary text-surface-card px-5 py-2.5 rounded-xl text-xs font-bold hover:opacity-90 transition-opacity"
           >
-            Start a new scan →
+            Start a new audit →
           </Link>
         </div>
       ) : (

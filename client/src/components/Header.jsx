@@ -90,7 +90,7 @@ export function Header() {
             to="/scanner"
             className="text-sm font-bold bg-ink-primary text-surface-card px-5 py-2 rounded-full hover:opacity-90 transition-opacity shadow-sm"
           >
-            Start scan →
+            Audit Website →
           </Link>
         </div>
       </div>

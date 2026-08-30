@@ -61,7 +61,7 @@ export function DashboardPage() {
               Welcome back, Security Lead.
             </h1>
             <p className="text-sm text-ink-secondary mt-2 max-w-xl leading-relaxed">
-              Automated fuzzing and vulnerability analysis for your authorized targets. Ready to initiate non-destructive security tests.
+              Automated fuzzing and vulnerability analysis for your authorized targets. Ready to initiate non-destructive security audits.
             </p>
           </div>
 
@@ -73,7 +73,7 @@ export function DashboardPage() {
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
                 <path d="M12 5v14m-7-7h14" strokeLinecap="round"/>
               </svg>
-              Launch Assessment
+              Start Audit
             </Link>
           </div>
         </div>
@@ -88,7 +88,7 @@ export function DashboardPage() {
             </div>
             <input
               type="url"
-              placeholder="Quick assessment: enter target URL (e.g. http://testphp.vulnweb.com)..."
+              placeholder="Quick audit: enter target URL (e.g. http://altoro.testfire.net)..."
               value={quickUrl}
               onChange={(e) => setQuickUrl(e.target.value)}
               className="w-full bg-surface-bg border border-border-subtle rounded-xl pl-11 pr-4 py-3 text-xs font-mono text-ink-primary placeholder-ink-muted focus:outline-none focus:border-ink-secondary focus:ring-2 focus:ring-ink-primary/10 transition-all"
@@ -99,7 +99,7 @@ export function DashboardPage() {
             disabled={!quickUrl.trim()}
             className="bg-surface-raised border border-border-subtle text-ink-primary font-bold text-xs px-5 py-3 rounded-xl hover:border-ink-secondary disabled:opacity-40 transition-colors"
           >
-            Quick Scan →
+            Audit Now →
           </button>
         </form>
       </div>
@@ -107,7 +107,7 @@ export function DashboardPage() {
       {/* 4 Key Metric Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {[
-          { label: 'Total Assessments', value: totalScans > 0 ? totalScans : '12', sub: totalScans > 0 ? 'Stored locally' : 'Simulated benchmark' },
+          { label: 'Total Audits', value: totalScans > 0 ? totalScans : '12', sub: totalScans > 0 ? 'Stored in session' : 'Demo benchmark' },
           { label: 'Identified Flaws', value: totalVulns > 0 ? totalVulns : '8', sub: `${criticalCount > 0 ? criticalCount : 1} Critical • ${highCount > 0 ? highCount : 3} High` },
           { label: 'Mean Security Score', value: `${avgScore}/100`, sub: avgScore >= 80 ? 'Grade A (Strong)' : 'Needs Attention' },
           { label: 'Sandbox Engine', value: 'Active', sub: 'Non-destructive mode' },
@@ -200,8 +200,8 @@ export function DashboardPage() {
       <div className="bg-surface-card border border-border-subtle rounded-3xl overflow-hidden shadow-xs">
         <div className="px-7 py-5 border-b border-border-subtle flex items-center justify-between">
           <div>
-            <h2 className="text-base font-bold text-ink-primary">Recent Assessments</h2>
-            <p className="text-xs text-ink-secondary mt-0.5">Scans executed from this browser session</p>
+            <h2 className="text-base font-bold text-ink-primary">Recent Security Audits</h2>
+            <p className="text-xs text-ink-secondary mt-0.5">Audits executed from this browser session</p>
           </div>
           <Link
             to="/history"
@@ -218,13 +218,13 @@ export function DashboardPage() {
                 <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5.586a1 1 0 0 1 .707.293l5.414 5.414a1 1 0 0 1 .293.707V19a2 2 0 0 1-2 2z" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
             </div>
-            <p className="text-sm font-bold text-ink-primary">No scans executed yet</p>
-            <p className="text-xs text-ink-secondary mt-1 mb-4">Launch your first security scan using the quick input above or the Scanner page.</p>
+            <p className="text-sm font-bold text-ink-primary">No audits executed yet</p>
+            <p className="text-xs text-ink-secondary mt-1 mb-4">Launch your first security audit using the quick input above or the Audit Lab.</p>
             <Link
               to="/scanner"
               className="inline-flex items-center gap-1.5 bg-ink-primary text-surface-card px-5 py-2.5 rounded-xl text-xs font-bold hover:opacity-90 transition-opacity"
             >
-              Start First Scan →
+              Start First Audit →
             </Link>
           </div>
         ) : (

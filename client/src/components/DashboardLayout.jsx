@@ -14,7 +14,7 @@ const NAV = [
     ),
   },
   {
-    name: 'New Scan',
+    name: 'Audit Lab',
     href: '/scanner',
     icon: (
       <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8">
@@ -23,7 +23,7 @@ const NAV = [
     ),
   },
   {
-    name: 'Reports & History',
+    name: 'Audit Reports',
     href: '/history',
     icon: (
       <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8">
@@ -94,7 +94,7 @@ export function DashboardLayout({ children }) {
             <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
               <path d="M12 5v14m-7-7h14" strokeLinecap="round"/>
             </svg>
-            New Scan
+            Start Audit
           </Link>
         </div>
 
