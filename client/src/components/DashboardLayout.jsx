@@ -79,9 +79,6 @@ export function DashboardLayout({ children }) {
             </div>
             <span className="text-base font-black tracking-tight text-ink-primary">FuzzGuard</span>
           </Link>
-          <span className="text-[9px] font-bold uppercase tracking-wider text-emerald-500 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-full">
-            v2.4
-          </span>
         </div>
 
         {/* Quick Launch CTA */}
@@ -122,18 +119,6 @@ export function DashboardLayout({ children }) {
             );
           })}
         </nav>
-
-        {/* System & Engine Status */}
-        <div className="px-4 py-3 border-t border-border-subtle bg-surface-bg/50">
-          <div className="flex items-center justify-between text-[10px] text-ink-secondary mb-1">
-            <span className="font-semibold uppercase tracking-wider text-ink-muted">Scanner Engine</span>
-            <span className="flex items-center gap-1.5 text-emerald-500 font-bold">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse-dot"/>
-              Online
-            </span>
-          </div>
-          <p className="text-[10px] text-ink-muted">Ready for non-destructive fuzzing</p>
-        </div>
 
         {/* User Profile & Theme Toggle */}
         <div className="p-3 border-t border-border-subtle space-y-2 shrink-0 bg-surface-card">
@@ -194,16 +179,12 @@ export function DashboardLayout({ children }) {
           <div className="flex items-center gap-3">
             <span className="text-xs font-bold uppercase tracking-wider text-ink-muted">Workspace</span>
             <span className="text-xs text-ink-muted">/</span>
-            <span className="text-xs font-semibold text-ink-primary font-mono">
+            <span className="text-xs font-semibold text-ink-primary font-mono capitalize">
               {location.pathname === '/dashboard' ? 'Overview' : location.pathname.replace('/', '')}
             </span>
           </div>
 
           <div className="flex items-center gap-4">
-            <div className="hidden sm:flex items-center gap-2 text-xs text-ink-secondary bg-surface-bg border border-border-subtle px-3 py-1.5 rounded-full">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse-dot" />
-              <span>Safe Sandbox Mode Active</span>
-            </div>
             <Link
               to="/about"
               className="text-xs font-medium text-ink-secondary hover:text-ink-primary transition-colors"
