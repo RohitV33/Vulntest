@@ -10,7 +10,7 @@ export const API_BASE = import.meta.env.VITE_API_BASE || '/api';
 
 const client = axios.create({
   baseURL: API_BASE,
-  timeout: 20_000,
+  timeout: 60_000,
   headers: { 'Content-Type': 'application/json' },
 });
 
@@ -20,8 +20,8 @@ function toError(error) {
   const message =
     payload?.message ||
     (error?.code === 'ECONNABORTED'
-      ? 'The scanner API did not respond in time.'
-      : error?.message || 'The scanner API is unreachable.');
+      ? 'The backend server is waking up. Please click Audit again in a few seconds.'
+      : error?.message || 'The scanner API is unreachable. Check your backend deployment.');
   const wrapped = new Error(message);
   wrapped.code = payload?.code || error?.code || 'request_failed';
   wrapped.status = error?.response?.status ?? null;
