@@ -1,6 +1,6 @@
 const PRESETS = [
   { label: 'Altoro Mutual (Fast Demo)', url: 'http://altoro.testfire.net' },
-  { label: 'Acunetix PHP Testbed', url: 'http://testphp.vulnweb.com' },
+  { label: 'Zero Bank Testbed (Quick)', url: 'http://zero.webappsecurity.com' },
 ];
 
 export function ScanLauncher({
