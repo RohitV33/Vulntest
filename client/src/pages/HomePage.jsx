@@ -1,142 +1,181 @@
 import { Link } from 'react-router-dom';
+import { RevealOnScroll } from '../components/RevealOnScroll.jsx';
 
 export function HomePage() {
   return (
-    <div className="min-h-screen bg-surface-bg flex flex-col justify-center animate-fade-in relative overflow-hidden">
+    <div className="bg-surface-bg flex flex-col justify-center w-full overflow-hidden">
       
-      {/* Background Subtle Elements */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute -top-1/4 -right-1/4 w-full h-full max-w-4xl opacity-[0.03] bg-ink-primary rounded-full blur-[120px]" />
-        <div className="absolute -bottom-1/4 -left-1/4 w-full h-full max-w-4xl opacity-[0.02] bg-ink-primary rounded-full blur-[120px]" />
-      </div>
-
-      <section className="relative z-10 w-full max-w-7xl mx-auto px-6 py-20 lg:py-32 flex flex-col items-center text-center">
-        
-        {/* Eyebrow */}
-        <p className="text-[10px] sm:text-xs font-semibold tracking-[0.2em] uppercase text-ink-secondary mb-6 animate-slide-up">
-          Web Security • Fuzzing • Vulnerability Assessment
-        </p>
-
-        {/* Headline */}
-        <h1 className="text-4xl sm:text-6xl md:text-[80px] font-bold text-ink-primary tracking-tight leading-[1.05] max-w-4xl animate-slide-up" style={{ animationDelay: '50ms' }}>
-          Find vulnerabilities before attackers do.
-        </h1>
-
-        {/* Supporting text */}
-        <p className="mt-8 text-base sm:text-lg text-ink-secondary max-w-2xl leading-relaxed animate-slide-up" style={{ animationDelay: '100ms' }}>
-          Automatically discover and analyze security vulnerabilities in your web applications with a fast, developer-focused web fuzzing platform.
-        </p>
-
-        {/* Actions */}
-        <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4 animate-slide-up" style={{ animationDelay: '150ms' }}>
-          <Link
-            to="/scanner"
-            className="flex items-center gap-2 bg-ink-primary text-surface-card px-8 py-4 rounded-md font-medium text-sm hover:opacity-90 transition-opacity w-full sm:w-auto justify-center"
-          >
-            Start a free scan <span>→</span>
-          </Link>
-          <Link
-            to="/docs"
-            className="flex items-center gap-2 bg-surface-card border border-border-subtle text-ink-primary px-8 py-4 rounded-md font-medium text-sm hover:border-ink-secondary transition-colors w-full sm:w-auto justify-center shadow-xs"
-          >
-            View documentation
-          </Link>
+      {/* Hero Section */}
+      <section className="relative min-h-screen flex items-center pt-20 pb-32">
+        <div className="absolute inset-0 w-full h-full">
+          <img 
+            src="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&q=80&w=2000"
+            alt="Cybersecurity Abstract" 
+            className="w-full h-full object-cover opacity-10 mix-blend-luminosity"
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-surface-bg via-surface-bg/80 to-surface-bg" />
         </div>
 
-        {/* Under buttons note */}
-        <p className="mt-6 text-xs text-ink-secondary animate-slide-up" style={{ animationDelay: '200ms' }}>
-          No installation required · PDF & JSON reports
-        </p>
+        <div className="relative z-10 w-full max-w-7xl mx-auto px-6 flex flex-col items-center text-center">
+          <RevealOnScroll delay={0}>
+            <p className="text-[10px] sm:text-xs font-bold tracking-[0.3em] uppercase text-ink-secondary mb-8 border border-border-subtle rounded-full px-4 py-1.5 bg-surface-card/50 backdrop-blur-md">
+              Enterprise Web Security Platform
+            </p>
+          </RevealOnScroll>
 
+          <RevealOnScroll delay={100}>
+            <h1 className="text-5xl sm:text-7xl md:text-[90px] font-bold text-ink-primary tracking-tighter leading-[1.05] max-w-5xl">
+              Find vulnerabilities before <span className="text-transparent bg-clip-text bg-gradient-to-r from-ink-primary to-ink-secondary">attackers do.</span>
+            </h1>
+          </RevealOnScroll>
+
+          <RevealOnScroll delay={200}>
+            <p className="mt-8 text-lg sm:text-xl text-ink-secondary max-w-2xl leading-relaxed font-light">
+              Automatically discover and analyze security vulnerabilities in your web applications with a fast, developer-focused fuzzing engine.
+            </p>
+          </RevealOnScroll>
+
+          <RevealOnScroll delay={300}>
+            <div className="mt-12 flex flex-col sm:flex-row items-center justify-center gap-4">
+              <Link
+                to="/scanner"
+                className="flex items-center gap-3 bg-ink-primary text-surface-card px-10 py-5 rounded-md font-medium text-base hover:scale-105 transition-transform duration-300 w-full sm:w-auto justify-center shadow-2xl"
+              >
+                Start free assessment <span className="text-xl">→</span>
+              </Link>
+              <Link
+                to="/enterprise"
+                className="flex items-center gap-3 bg-surface-card/50 backdrop-blur-md border border-border-subtle text-ink-primary px-10 py-5 rounded-md font-medium text-base hover:bg-surface-card transition-colors duration-300 w-full sm:w-auto justify-center"
+              >
+                Book a demo
+              </Link>
+            </div>
+          </RevealOnScroll>
+
+          {/* Mouse scroll indicator */}
+          <RevealOnScroll delay={600} className="mt-24">
+            <div className="flex flex-col items-center gap-2 text-ink-secondary opacity-50 animate-bounce">
+              <span className="text-[10px] uppercase tracking-widest font-semibold">Scroll</span>
+              <div className="w-px h-12 bg-gradient-to-b from-ink-secondary to-transparent" />
+            </div>
+          </RevealOnScroll>
+        </div>
       </section>
 
-      {/* Floating Product Cards Area */}
-      <div className="relative w-full max-w-7xl mx-auto h-[400px] lg:h-[600px] hidden md:block pointer-events-none mt-[-80px]">
-        
-        {/* Card 1 - Security Score */}
-        <div className="absolute top-[10%] left-[5%] animate-float bg-surface-card border border-border-subtle rounded-xl p-5 shadow-xl w-64 rotate-[-2deg]">
-          <p className="text-[10px] font-bold uppercase tracking-wider text-ink-secondary mb-3">Security Score</p>
-          <div className="text-3xl font-semibold text-ink-primary mb-2">87 <span className="text-sm text-ink-secondary">/ 100</span></div>
-          <div className="flex gap-1 mb-2">
+      {/* Floating Cards UI Showcase */}
+      <section className="relative z-20 -mt-20 max-w-7xl mx-auto px-6 w-full hidden lg:block h-[500px] pointer-events-none">
+        <RevealOnScroll delay={0} className="absolute top-[0%] left-[5%] bg-surface-card border border-border-subtle rounded-2xl p-6 shadow-2xl w-72 rotate-[-3deg] backdrop-blur-xl">
+          <p className="text-[10px] font-bold uppercase tracking-wider text-ink-secondary mb-4">Security Score</p>
+          <div className="text-5xl font-light text-ink-primary mb-3 tabular-nums tracking-tighter">87<span className="text-xl text-ink-secondary ml-1">/100</span></div>
+          <div className="flex gap-1.5 mb-3">
             {[...Array(10)].map((_, i) => (
-              <div key={i} className={`h-1.5 flex-1 rounded-sm ${i < 8 ? 'bg-ink-primary' : 'bg-border-subtle'}`} />
+              <div key={i} className={`h-2 flex-1 rounded-sm ${i < 8 ? 'bg-ink-primary' : 'bg-border-subtle'}`} />
             ))}
           </div>
-          <p className="text-xs font-medium text-ink-secondary mt-1">Good</p>
-        </div>
+          <p className="text-xs font-medium text-ink-secondary">Enterprise standard met</p>
+        </RevealOnScroll>
 
-        {/* Card 2 - Findings */}
-        <div className="absolute top-[20%] right-[8%] animate-float-delayed bg-surface-card border border-border-subtle rounded-xl p-5 shadow-xl w-56 rotate-[3deg]">
-          <p className="text-[10px] font-bold uppercase tracking-wider text-ink-secondary mb-4">Findings</p>
-          <div className="space-y-3">
-            <div className="flex justify-between items-center text-xs">
-              <span className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-red-500"></span>Critical</span>
+        <RevealOnScroll delay={200} className="absolute top-[20%] right-[5%] bg-surface-card border border-border-subtle rounded-2xl p-6 shadow-2xl w-64 rotate-[2deg] backdrop-blur-xl">
+          <p className="text-[10px] font-bold uppercase tracking-wider text-ink-secondary mb-5">Active Findings</p>
+          <div className="space-y-4">
+            <div className="flex justify-between items-center text-sm">
+              <span className="flex items-center gap-3"><span className="w-2 h-2 rounded-full bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.5)]"></span>Critical</span>
               <span className="font-semibold text-ink-primary">1</span>
             </div>
-            <div className="flex justify-between items-center text-xs">
-              <span className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-orange-500"></span>High</span>
+            <div className="flex justify-between items-center text-sm">
+              <span className="flex items-center gap-3"><span className="w-2 h-2 rounded-full bg-orange-500 shadow-[0_0_8px_rgba(249,115,22,0.5)]"></span>High</span>
               <span className="font-semibold text-ink-primary">3</span>
             </div>
-            <div className="flex justify-between items-center text-xs">
-              <span className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-yellow-500"></span>Medium</span>
+            <div className="flex justify-between items-center text-sm">
+              <span className="flex items-center gap-3"><span className="w-2 h-2 rounded-full bg-yellow-500 shadow-[0_0_8px_rgba(234,179,8,0.5)]"></span>Medium</span>
               <span className="font-semibold text-ink-primary">7</span>
             </div>
-            <div className="flex justify-between items-center text-xs">
-              <span className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-accent-blue"></span>Low</span>
-              <span className="font-semibold text-ink-primary">4</span>
-            </div>
+          </div>
+        </RevealOnScroll>
+      </section>
+
+      {/* Feature Grid */}
+      <section className="py-32 bg-surface-card relative overflow-hidden">
+        <div className="max-w-7xl mx-auto px-6 relative z-10">
+          <RevealOnScroll>
+            <h2 className="text-3xl md:text-5xl font-bold text-ink-primary tracking-tight max-w-2xl mb-20">
+              Uncompromising security analysis, beautifully designed.
+            </h2>
+          </RevealOnScroll>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+            <RevealOnScroll delay={0}>
+              <div className="space-y-4">
+                <div className="w-12 h-12 rounded-full bg-surface-bg border border-border-subtle flex items-center justify-center text-ink-primary mb-6">
+                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+                </div>
+                <h3 className="text-xl font-bold text-ink-primary">Deep Fuzzing</h3>
+                <p className="text-ink-secondary leading-relaxed font-light">
+                  Our proprietary engine mutates thousands of payloads per second to find obscure injection points and edge cases.
+                </p>
+              </div>
+            </RevealOnScroll>
+
+            <RevealOnScroll delay={150}>
+              <div className="space-y-4">
+                <div className="w-12 h-12 rounded-full bg-surface-bg border border-border-subtle flex items-center justify-center text-ink-primary mb-6">
+                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                </div>
+                <h3 className="text-xl font-bold text-ink-primary">Editorial Reports</h3>
+                <p className="text-ink-secondary leading-relaxed font-light">
+                  Export stunning, boardroom-ready PDF and JSON reports. Security shouldn't just be secure—it should look good.
+                </p>
+              </div>
+            </RevealOnScroll>
+
+            <RevealOnScroll delay={300}>
+              <div className="space-y-4">
+                <div className="w-12 h-12 rounded-full bg-surface-bg border border-border-subtle flex items-center justify-center text-ink-primary mb-6">
+                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
+                </div>
+                <h3 className="text-xl font-bold text-ink-primary">Zero Setup</h3>
+                <p className="text-ink-secondary leading-relaxed font-light">
+                  No agents to install, no complicated configurations. Just enter a URL and start scanning in seconds.
+                </p>
+              </div>
+            </RevealOnScroll>
           </div>
         </div>
+      </section>
 
-        {/* Card 3 - Scan Status */}
-        <div className="absolute bottom-[20%] left-[12%] animate-float-reverse bg-surface-card border border-border-subtle rounded-xl p-5 shadow-xl w-64 rotate-[1deg]">
-          <p className="text-[10px] font-bold uppercase tracking-wider text-ink-secondary mb-1">Scan Complete</p>
-          <p className="text-sm font-medium text-ink-primary mb-4">example.com</p>
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <p className="text-lg font-semibold text-ink-primary">1,284</p>
-              <p className="text-[10px] text-ink-secondary uppercase tracking-wider">Requests</p>
-            </div>
-            <div>
-              <p className="text-lg font-semibold text-ink-primary">86</p>
-              <p className="text-[10px] text-ink-secondary uppercase tracking-wider">Endpoints</p>
-            </div>
-            <div>
-              <p className="text-lg font-semibold text-ink-primary">15</p>
-              <p className="text-[10px] text-ink-secondary uppercase tracking-wider">Findings</p>
+      {/* Large Image Showcase */}
+      <section className="py-32 px-6 max-w-7xl mx-auto">
+        <RevealOnScroll>
+          <div className="rounded-3xl overflow-hidden border border-border-subtle shadow-2xl relative aspect-[16/9]">
+            <img 
+              src="https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&q=80&w=2000"
+              alt="Cybersecurity Code Analysis"
+              className="w-full h-full object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-surface-bg to-transparent flex items-end p-12">
+              <div className="max-w-xl">
+                <h3 className="text-3xl font-bold text-ink-primary mb-4">Precision Analysis</h3>
+                <p className="text-ink-secondary text-lg">Every line of code, every endpoint, every parameter rigorously tested against modern threat vectors.</p>
+              </div>
             </div>
           </div>
-        </div>
+        </RevealOnScroll>
+      </section>
 
-        {/* Card 4 - Vulnerability */}
-        <div className="absolute bottom-[25%] right-[15%] animate-float bg-surface-card border border-border-subtle rounded-xl p-5 shadow-xl w-72 rotate-[-1deg]">
-          <div className="flex items-center gap-2 mb-2">
-            <span className="px-1.5 py-0.5 bg-orange-500/10 text-orange-600 dark:text-orange-400 text-[10px] font-bold uppercase rounded">High</span>
-            <p className="text-xs font-semibold text-ink-primary">Reflected XSS</p>
-          </div>
-          <p className="font-mono text-[11px] text-ink-secondary bg-surface-bg p-2 rounded mb-3 border border-border-subtle">
-            /search?q=test
-          </p>
-          <button className="text-xs font-medium text-accent-blue hover:underline">
-            View finding →
-          </button>
-        </div>
-
-        {/* Card 5 - Report */}
-        <div className="absolute top-[50%] left-[50%] -translate-x-1/2 animate-float-delayed bg-surface-card border border-border-subtle rounded-xl p-6 shadow-2xl w-80 rotate-[2deg] z-0 opacity-40 blur-[1px]">
-          <p className="text-[10px] font-bold uppercase tracking-wider text-ink-secondary mb-1">Security Report</p>
-          <p className="text-sm font-medium text-ink-primary mb-4">example.com</p>
-          <div className="flex gap-3">
-            <div className="flex-1 border border-border-subtle rounded flex items-center justify-center py-2 gap-2 text-xs font-medium text-ink-secondary bg-surface-bg">
-              PDF
-            </div>
-            <div className="flex-1 border border-border-subtle rounded flex items-center justify-center py-2 gap-2 text-xs font-medium text-ink-secondary bg-surface-bg">
-              JSON
-            </div>
-          </div>
-        </div>
-
-      </div>
+      {/* Final CTA */}
+      <section className="py-32 border-t border-border-subtle bg-surface-bg text-center px-6">
+        <RevealOnScroll>
+          <h2 className="text-4xl md:text-6xl font-bold text-ink-primary tracking-tight mb-8">
+            Ready to secure your stack?
+          </h2>
+          <Link
+            to="/signup"
+            className="inline-flex items-center gap-3 bg-ink-primary text-surface-card px-12 py-5 rounded-md font-bold text-lg hover:scale-105 transition-transform duration-300 shadow-xl"
+          >
+            Create free account
+          </Link>
+        </RevealOnScroll>
+      </section>
     </div>
   );
 }

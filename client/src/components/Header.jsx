@@ -5,7 +5,7 @@ const NAV = [
   { to: '/scanner', label: 'Scanner' },
   { to: '/reports', label: 'Reports' },
   { to: '/docs', label: 'Documentation' },
-  { to: '/pricing', label: 'Pricing' },
+  { to: '/enterprise', label: 'Enterprise' },
 ];
 
 export function Header() {
