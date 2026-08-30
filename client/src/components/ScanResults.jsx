@@ -35,13 +35,15 @@ export function ScanResults({ scan, onFindingStatusChange }) {
   };
 
   const severityCounts = {
-    critical: findings.filter(f => f.severity === 'critical').length,
-    high:     findings.filter(f => f.severity === 'high').length,
-    medium:   findings.filter(f => f.severity === 'medium').length,
-    low:      findings.filter(f => f.severity === 'low').length,
+    critical: findings.filter(f => String(f.severity || '').toLowerCase() === 'critical').length,
+    high:     findings.filter(f => String(f.severity || '').toLowerCase() === 'high').length,
+    medium:   findings.filter(f => String(f.severity || '').toLowerCase() === 'medium').length,
+    low:      findings.filter(f => String(f.severity || '').toLowerCase() === 'low').length,
   };
 
-  const filtered = filter === 'all' ? findings : findings.filter(f => f.severity === filter);
+  const filtered = filter === 'all' 
+    ? findings 
+    : findings.filter(f => String(f.severity || '').toLowerCase() === filter.toLowerCase());
 
   return (
     <div className="space-y-5">
@@ -179,7 +181,7 @@ export function ScanResults({ scan, onFindingStatusChange }) {
                     className="border-b border-border-subtle/50 hover:bg-surface-bg cursor-pointer transition-colors group last:border-0"
                   >
                     <td className="px-5 py-4">
-                      <span className={`inline-block px-2 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider ${SEV_CONFIG[finding.severity]?.className || 'badge-info'}`}>
+                      <span className={`inline-block px-2 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider ${SEV_CONFIG[String(finding.severity || '').toLowerCase()]?.className || 'badge-info'}`}>
                         {finding.severity}
                       </span>
                     </td>

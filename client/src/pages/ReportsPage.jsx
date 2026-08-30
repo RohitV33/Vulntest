@@ -62,10 +62,10 @@ function exportJson(scan) {
 function ReportDetail({ scan, onClose }) {
   const findings = scan?.findings ?? [];
   const sevCounts = {
-    critical: findings.filter(f => f.severity === 'critical').length,
-    high:     findings.filter(f => f.severity === 'high').length,
-    medium:   findings.filter(f => f.severity === 'medium').length,
-    low:      findings.filter(f => f.severity === 'low').length,
+    critical: findings.filter(f => String(f.severity || '').toLowerCase() === 'critical').length,
+    high:     findings.filter(f => String(f.severity || '').toLowerCase() === 'high').length,
+    medium:   findings.filter(f => String(f.severity || '').toLowerCase() === 'medium').length,
+    low:      findings.filter(f => String(f.severity || '').toLowerCase() === 'low').length,
   };
   const score = Math.max(0, 100 - (sevCounts.critical*15 + sevCounts.high*10 + sevCounts.medium*5 + sevCounts.low*2));
   const [tab, setTab] = useState('findings');
@@ -317,10 +317,10 @@ export function ReportsPage() {
               {filtered.map((scan, i) => {
                 const findings = scan.findings ?? [];
                 const sevCounts = {
-                  critical: findings.filter(f => f.severity === 'critical').length,
-                  high:     findings.filter(f => f.severity === 'high').length,
-                  medium:   findings.filter(f => f.severity === 'medium').length,
-                  low:      findings.filter(f => f.severity === 'low').length,
+                  critical: findings.filter(f => String(f.severity || '').toLowerCase() === 'critical').length,
+                  high:     findings.filter(f => String(f.severity || '').toLowerCase() === 'high').length,
+                  medium:   findings.filter(f => String(f.severity || '').toLowerCase() === 'medium').length,
+                  low:      findings.filter(f => String(f.severity || '').toLowerCase() === 'low').length,
                 };
                 const score = Math.max(0, 100 - (sevCounts.critical*15 + sevCounts.high*10 + sevCounts.medium*5 + sevCounts.low*2));
                 const isRunning = scan.status === 'running';

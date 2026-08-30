@@ -12,10 +12,10 @@ export function DashboardPage() {
   
   // Calculate total vulnerabilities across all scans
   const allFindings = scans.flatMap(s => s.findings || []);
-  const criticalCount = allFindings.filter(f => f.severity === 'critical').length;
-  const highCount = allFindings.filter(f => f.severity === 'high').length;
-  const mediumCount = allFindings.filter(f => f.severity === 'medium').length;
-  const lowCount = allFindings.filter(f => f.severity === 'low').length;
+  const criticalCount = allFindings.filter(f => String(f.severity || '').toLowerCase() === 'critical').length;
+  const highCount = allFindings.filter(f => String(f.severity || '').toLowerCase() === 'high').length;
+  const mediumCount = allFindings.filter(f => String(f.severity || '').toLowerCase() === 'medium').length;
+  const lowCount = allFindings.filter(f => String(f.severity || '').toLowerCase() === 'low').length;
   const totalVulns = allFindings.length;
 
   // Calculate average security score
@@ -26,10 +26,10 @@ export function DashboardPage() {
           const score = Math.max(
             0,
             100 - (
-              f.filter(x => x.severity === 'critical').length * 15 +
-              f.filter(x => x.severity === 'high').length * 10 +
-              f.filter(x => x.severity === 'medium').length * 5 +
-              f.filter(x => x.severity === 'low').length * 2
+              f.filter(x => String(x.severity || '').toLowerCase() === 'critical').length * 15 +
+              f.filter(x => String(x.severity || '').toLowerCase() === 'high').length * 10 +
+              f.filter(x => String(x.severity || '').toLowerCase() === 'medium').length * 5 +
+              f.filter(x => String(x.severity || '').toLowerCase() === 'low').length * 2
             )
           );
           return acc + score;
