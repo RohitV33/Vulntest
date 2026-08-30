@@ -1,14 +1,15 @@
-import { Button } from './ui/Button.jsx';
-
 const PRESETS = [
-  { label: 'PHP Testbed (XSS & SQLi)', url: 'http://testphp.vulnweb.com' },
-  { label: 'ASP Testbed (Forms & Auth)', url: 'http://testasp.vulnweb.com' },
-  { label: 'Local Testbed', url: 'http://localhost:3000/testbed' },
+  { label: 'PHP Testbed', url: 'http://testphp.vulnweb.com' },
+  { label: 'ASP Testbed', url: 'http://testasp.vulnweb.com' },
+  { label: 'Local Dev', url: 'http://localhost:3000/testbed' },
 ];
 
-/**
- * Enhanced Target entry, preset pills, and scan controls.
- */
+const SCAN_MODES = [
+  { id: 'quick', label: 'Quick', desc: '~2 min', checks: 'Core checks only' },
+  { id: 'standard', label: 'Standard', desc: '~8 min', checks: 'Full suite' },
+  { id: 'deep', label: 'Deep', desc: '~20 min', checks: 'Exhaustive fuzzing' },
+];
+
 export function ScanLauncher({
   target,
   onTargetChange,
@@ -24,106 +25,193 @@ export function ScanLauncher({
 }) {
   const canStart = target.trim() !== '' && authorized && !running && !busy;
 
-  const submit = (event) => {
-    event.preventDefault();
+  const submit = (e) => {
+    e.preventDefault();
     if (canStart) onStart();
   };
 
   return (
-    <div className="bg-surface-card border border-border-subtle rounded-xl p-8 shadow-sm">
-      <h2 className="text-2xl font-bold text-ink-primary mb-8">New Security Scan</h2>
+    <div className="relative">
+      {/* Large editorial heading */}
+      <div className="mb-8">
+        <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-ink-secondary mb-3">
+          Vulnerability Scanner
+        </p>
+        <h1 className="text-3xl font-bold text-ink-primary tracking-tight">
+          {running ? 'Scan in progress...' : 'Start a new assessment'}
+        </h1>
+      </div>
 
-      <form onSubmit={submit} className="space-y-8">
-        {/* Large URL Field */}
-        <div>
+      <form onSubmit={submit} className="space-y-5">
+        {/* URL Input — the hero element */}
+        <div className="relative group">
+          <div className="absolute left-5 top-1/2 -translate-y-1/2 text-ink-secondary group-focus-within:text-ink-primary transition-colors pointer-events-none">
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+              <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35" strokeLinecap="round"/>
+            </svg>
+          </div>
           <input
             id="target"
             type="url"
-            placeholder="https://example.com"
+            placeholder="https://your-app.com"
             value={target}
             onChange={(e) => onTargetChange(e.target.value)}
             disabled={running}
-            className="w-full bg-surface-bg border border-border-subtle rounded-lg px-6 py-4 text-lg font-mono text-ink-primary focus:outline-none focus:border-ink-secondary transition-colors"
+            className="w-full bg-surface-card border border-border-subtle rounded-2xl pl-12 pr-6 py-5 text-base font-medium text-ink-primary placeholder-ink-muted focus:outline-none focus:border-ink-secondary focus:ring-2 focus:ring-ink-primary/10 transition-all disabled:opacity-60 font-mono"
           />
+          {target && !running && (
+            <button
+              type="button"
+              onClick={() => onTargetChange('')}
+              className="absolute right-4 top-1/2 -translate-y-1/2 p-1.5 rounded-full text-ink-secondary hover:text-ink-primary hover:bg-surface-bg transition-colors"
+            >
+              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                <path d="M18 6 6 18M6 6l12 12" strokeLinecap="round"/>
+              </svg>
+            </button>
+          )}
         </div>
 
-        {/* Start Button */}
-        <div>
+        {/* Preset pills */}
+        <div className="flex flex-wrap gap-2">
+          {PRESETS.map((p) => (
+            <button
+              key={p.url}
+              type="button"
+              disabled={running}
+              onClick={() => { onTargetChange(p.url); onAuthorizedChange(true); }}
+              className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-all duration-150 ${
+                target === p.url
+                  ? 'bg-ink-primary text-surface-card border-ink-primary'
+                  : 'border-border-subtle text-ink-secondary hover:border-ink-secondary hover:text-ink-primary bg-surface-card'
+              }`}
+            >
+              {p.label}
+            </button>
+          ))}
+        </div>
+
+        {/* Scan Mode Selection */}
+        <div className="grid grid-cols-3 gap-3">
+          {SCAN_MODES.map((mode) => (
+            <label
+              key={mode.id}
+              className={`relative flex flex-col p-4 rounded-xl border cursor-pointer transition-all duration-150 group ${
+                mode.id === 'standard'
+                  ? 'border-ink-primary bg-ink-primary/5'
+                  : 'border-border-subtle bg-surface-card hover:border-ink-secondary'
+              }`}
+            >
+              <input type="radio" name="scan-mode" value={mode.id} defaultChecked={mode.id === 'standard'} className="sr-only" />
+              <div className="flex justify-between items-start mb-3">
+                <span className="text-sm font-bold text-ink-primary">{mode.label}</span>
+                <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${
+                  mode.id === 'standard'
+                    ? 'bg-ink-primary text-surface-card'
+                    : 'bg-surface-bg text-ink-secondary border border-border-subtle'
+                }`}>
+                  {mode.desc}
+                </span>
+              </div>
+              <p className="text-[11px] text-ink-secondary">{mode.checks}</p>
+            </label>
+          ))}
+        </div>
+
+        {/* Checks toggle row */}
+        <div className="bg-surface-card border border-border-subtle rounded-xl p-4">
+          <div className="flex items-center justify-between mb-3">
+            <p className="text-xs font-bold text-ink-primary uppercase tracking-wider">Security checks</p>
+            <button type="button" onClick={onOpenConfig} className="text-[11px] text-ink-secondary hover:text-ink-primary transition-colors font-medium">
+              Advanced config →
+            </button>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-2.5">
+            {[
+              { label: 'SQL Injection', key: 'sqli' },
+              { label: 'Cross-Site Scripting', key: 'xss' },
+              { label: 'Path Traversal', key: 'pathTraversal' },
+              { label: 'Security Headers', key: 'passive' },
+              { label: 'Open Redirect', key: 'redirect' },
+              { label: 'Directory Discovery', key: 'dir' },
+            ].map((check) => (
+              <label key={check.label} className="flex items-center gap-2.5 cursor-pointer group">
+                <div className={`w-4 h-4 rounded-md border flex items-center justify-center flex-shrink-0 transition-colors ${
+                  config.checks?.[check.key] !== false
+                    ? 'bg-ink-primary border-ink-primary'
+                    : 'border-border-subtle bg-surface-bg'
+                }`}>
+                  {config.checks?.[check.key] !== false && (
+                    <svg className="w-2.5 h-2.5 text-surface-card" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3">
+                      <path d="M5 13l4 4L19 7" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  )}
+                </div>
+                <span className="text-xs text-ink-secondary group-hover:text-ink-primary transition-colors">{check.label}</span>
+              </label>
+            ))}
+          </div>
+        </div>
+
+        {/* Auth confirmation */}
+        <label className="flex items-start gap-3 cursor-pointer group">
+          <div
+            className={`mt-0.5 w-4 h-4 rounded-md border flex items-center justify-center flex-shrink-0 transition-colors ${
+              authorized ? 'bg-ink-primary border-ink-primary' : 'border-border-subtle bg-surface-bg'
+            }`}
+            onClick={() => onAuthorizedChange(!authorized)}
+          >
+            {authorized && (
+              <svg className="w-2.5 h-2.5 text-surface-card" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3">
+                <path d="M5 13l4 4L19 7" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            )}
+          </div>
+          <input type="checkbox" className="sr-only" checked={authorized} onChange={(e) => onAuthorizedChange(e.target.checked)} disabled={running}/>
+          <span className="text-xs text-ink-secondary leading-relaxed">
+            I confirm I own or have written permission to test this target. I accept responsibility for the scan.
+          </span>
+        </label>
+
+        {/* Error */}
+        {error && (
+          <div className="flex items-center gap-3 bg-red-500/10 border border-red-500/20 text-red-500 px-4 py-3 rounded-xl text-sm">
+            <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+              <circle cx="12" cy="12" r="10"/><path d="M12 8v4m0 4h.01" strokeLinecap="round"/>
+            </svg>
+            {error}
+          </div>
+        )}
+
+        {/* CTA Buttons */}
+        <div className="flex items-center gap-3 pt-2">
           {running ? (
             <button
               type="button"
               onClick={onStop}
               disabled={busy}
-              className="bg-red-500 text-white px-8 py-3 rounded-md font-medium text-sm hover:opacity-90 transition-opacity flex items-center gap-2"
+              className="flex items-center gap-2.5 bg-red-500 text-white px-7 py-3.5 rounded-xl font-semibold text-sm hover:bg-red-600 transition-colors disabled:opacity-50"
             >
+              <span className="w-2 h-2 rounded-sm bg-white/80 animate-pulse-dot"/>
               Stop scan
             </button>
           ) : (
             <button
               type="submit"
               disabled={!canStart}
-              className="bg-ink-primary text-surface-card px-8 py-3 rounded-md font-medium text-sm hover:opacity-90 transition-opacity disabled:opacity-50 flex items-center gap-2"
+              className="flex items-center gap-2.5 bg-ink-primary text-surface-card px-7 py-3.5 rounded-xl font-semibold text-sm hover:opacity-90 transition-opacity disabled:opacity-40 disabled:cursor-not-allowed"
             >
-              {busy ? 'Initializing...' : 'Start scan →'}
+              {busy ? (
+                <>
+                  <span className="w-4 h-4 rounded-full border-2 border-surface-card/30 border-t-surface-card animate-spin"/>
+                  Initializing...
+                </>
+              ) : (
+                <>Launch assessment →</>
+              )}
             </button>
           )}
         </div>
-
-        {/* Scan Configuration */}
-        <div className="pt-6 border-t border-border-subtle space-y-6">
-          <h3 className="text-sm font-bold text-ink-primary">Scan configuration</h3>
-          
-          <div className="flex gap-6">
-            <label className="flex items-center gap-2 text-sm text-ink-secondary cursor-pointer">
-              <input type="radio" name="mode" className="accent-ink-primary" />
-              Quick
-            </label>
-            <label className="flex items-center gap-2 text-sm text-ink-primary font-medium cursor-pointer">
-              <input type="radio" name="mode" defaultChecked className="accent-ink-primary" />
-              Standard
-            </label>
-            <label className="flex items-center gap-2 text-sm text-ink-secondary cursor-pointer">
-              <input type="radio" name="mode" className="accent-ink-primary" />
-              Deep
-            </label>
-          </div>
-
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-y-4 gap-x-6">
-            {[
-              { label: 'SQL Injection', checked: config.checks?.sqli !== false },
-              { label: 'XSS', checked: config.checks?.xss !== false },
-              { label: 'Path Traversal', checked: config.checks?.pathTraversal !== false },
-              { label: 'Security Headers', checked: config.checks?.passive !== false },
-              { label: 'Open Redirect', checked: true },
-              { label: 'Directory Discovery', checked: true },
-            ].map((check) => (
-              <label key={check.label} className="flex items-center gap-3 text-sm text-ink-secondary cursor-pointer hover:text-ink-primary transition-colors">
-                <input type="checkbox" defaultChecked={check.checked} className="w-4 h-4 rounded border-border-subtle text-ink-primary accent-ink-primary" />
-                {check.label}
-              </label>
-            ))}
-          </div>
-        </div>
-
-        {/* Authorization */}
-        <div className="pt-4">
-          <label className="flex items-center gap-3 text-xs text-ink-secondary cursor-pointer">
-            <input
-              type="checkbox"
-              checked={authorized}
-              onChange={(e) => onAuthorizedChange(e.target.checked)}
-              disabled={running}
-              className="w-4 h-4 rounded border-border-subtle text-ink-primary accent-ink-primary"
-            />
-            Only scan websites you own or have permission to test.
-          </label>
-        </div>
-
-        {error && (
-          <div className="bg-red-500/10 text-red-600 border border-red-500/20 px-4 py-3 rounded-md text-sm">
-            {error}
-          </div>
-        )}
       </form>
     </div>
   );

@@ -1,8 +1,23 @@
 import { formatDuration, formatNumber } from '../utils/format.js';
 import { ActivityLog } from './ActivityLog.jsx';
 
+const STEPS = [
+  { id: 'queued',    label: 'Target validation' },
+  { id: 'robots',   label: 'Endpoint discovery' },
+  { id: 'crawling', label: 'Surface mapping' },
+  { id: 'testing',  label: 'Vulnerability testing' },
+  { id: 'completed',label: 'Report generation' },
+];
+
+const STATUS_COLORS = {
+  completed: 'bg-emerald-500',
+  stopped:   'bg-yellow-500',
+  failed:    'bg-red-500',
+  running:   'bg-ink-primary',
+};
+
 export function ProgressPanel({ scan, connected, streamError }) {
-  const statistics = scan.statistics || {};
+  const stats = scan.statistics || {};
   const running = !['completed', 'stopped', 'failed'].includes(scan.status);
   const elapsed = scan.completedAt
     ? new Date(scan.completedAt) - new Date(scan.startedAt)
@@ -10,96 +25,121 @@ export function ProgressPanel({ scan, connected, streamError }) {
 
   const phase = scan.phase || scan.status;
   const progress = scan.progress ?? 0;
+  const currentStepIndex = Math.max(0, STEPS.findIndex(s => s.id === phase));
 
-  const steps = [
-    { id: 'queued', label: 'Target validation' },
-    { id: 'robots', label: 'Endpoint discovery' },
-    { id: 'crawling', label: 'Parameter analysis' },
-    { id: 'testing', label: 'Vulnerability testing' },
-    { id: 'completed', label: 'Report generation' },
-  ];
-
-  const currentStepIndex = steps.findIndex(s => s.id === phase) >= 0 ? steps.findIndex(s => s.id === phase) : 2;
+  const barColor = STATUS_COLORS[scan.status] || STATUS_COLORS.running;
 
   return (
-    <div className="bg-surface-card border border-border-subtle rounded-xl p-8 shadow-sm">
-      <div className="flex justify-between items-end mb-4">
-        <div>
-          <h3 className="text-[10px] font-bold uppercase tracking-wider text-ink-secondary mb-1">
-            {running ? 'Scanning' : scan.status === 'completed' ? 'Scan Complete' : 'Scan ' + scan.status}
-          </h3>
-          <p className="text-lg font-medium text-ink-primary">{scan.target}</p>
+    <div className="space-y-5">
+      {/* Top status card */}
+      <div className="bg-surface-card border border-border-subtle rounded-2xl overflow-hidden">
+        {/* Progress bar — runs along very top */}
+        <div className="h-0.5 w-full bg-border-subtle">
+          <div
+            className={`h-full transition-all duration-700 ease-out relative overflow-hidden ${barColor}`}
+            style={{ width: `${progress}%` }}
+          >
+            {running && <div className="absolute inset-0 progress-shimmer" />}
+          </div>
         </div>
-        <div className="text-3xl font-light text-ink-primary tabular-nums">
-          {progress}%
+
+        <div className="p-6">
+          {/* Header row */}
+          <div className="flex items-start justify-between mb-6">
+            <div>
+              <div className="flex items-center gap-2 mb-1.5">
+                {running && (
+                  <span className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.15em] text-emerald-500">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse-dot" />
+                    Live
+                  </span>
+                )}
+                {scan.status === 'completed' && (
+                  <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-emerald-500">Complete</span>
+                )}
+                {scan.status === 'failed' && (
+                  <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-red-500">Failed</span>
+                )}
+              </div>
+              <p className="text-base font-semibold text-ink-primary font-mono truncate max-w-xs">{scan.target}</p>
+            </div>
+            <div className="text-right">
+              <p className="text-4xl font-light text-ink-primary tabular-nums">{progress}<span className="text-lg text-ink-secondary">%</span></p>
+            </div>
+          </div>
+
+          {/* Stats row */}
+          <div className="grid grid-cols-4 gap-4">
+            {[
+              { value: formatNumber(stats.requests || 0), label: 'Requests' },
+              { value: formatNumber(stats.endpoints || 0), label: 'Endpoints' },
+              { value: formatNumber(stats.pages || 0), label: 'Pages' },
+              { value: formatDuration(elapsed), label: 'Elapsed' },
+            ].map(({ value, label }) => (
+              <div key={label} className="bg-surface-bg border border-border-subtle rounded-xl p-3">
+                <p className="text-lg font-semibold text-ink-primary tabular-nums">{value}</p>
+                <p className="text-[10px] uppercase tracking-wider text-ink-secondary mt-0.5">{label}</p>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 
-      {/* Thin Progress Bar */}
-      <div className="h-1 w-full bg-border-subtle rounded-full overflow-hidden mb-8">
-        <div 
-          className={`h-full transition-all duration-500 ease-out ${scan.status === 'failed' ? 'bg-red-500' : 'bg-ink-primary'}`}
-          style={{ width: `${progress}%` }}
-        />
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        {/* Steps */}
-        <div className="space-y-3">
-          {steps.map((step, idx) => {
-            let statusIcon;
-            let textClass;
-            
-            if (scan.status === 'completed' || idx < currentStepIndex) {
-              statusIcon = <span className="text-ink-primary">✓</span>;
-              textClass = 'text-ink-primary';
-            } else if (idx === currentStepIndex && running) {
-              statusIcon = <span className="text-accent-blue font-bold">→</span>;
-              textClass = 'text-ink-primary font-medium';
-            } else {
-              statusIcon = <span className="text-border-subtle">○</span>;
-              textClass = 'text-ink-secondary';
-            }
+      {/* Steps track */}
+      <div className="bg-surface-card border border-border-subtle rounded-2xl p-5">
+        <p className="text-[10px] font-bold uppercase tracking-wider text-ink-secondary mb-4">Scan phases</p>
+        <div className="flex items-center gap-0">
+          {STEPS.map((step, idx) => {
+            const done    = scan.status === 'completed' || idx < currentStepIndex;
+            const active  = idx === currentStepIndex && running;
+            const pending = !done && !active;
 
             return (
-              <div key={step.id} className={`flex items-center gap-3 text-sm ${textClass}`}>
-                <div className="w-4 flex justify-center">{statusIcon}</div>
-                {step.label}
+              <div key={step.id} className="flex items-center flex-1">
+                <div className="flex flex-col items-center flex-1">
+                  {/* Dot */}
+                  <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold transition-all ${
+                    done
+                      ? 'bg-ink-primary text-surface-card'
+                      : active
+                        ? 'bg-surface-bg border-2 border-ink-primary text-ink-primary'
+                        : 'bg-surface-bg border-2 border-border-subtle text-ink-muted'
+                  }`}>
+                    {done ? (
+                      <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3">
+                        <path d="M5 13l4 4L19 7" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                    ) : (
+                      idx + 1
+                    )}
+                  </div>
+                  {/* Label */}
+                  <p className={`text-[10px] text-center mt-2 font-medium ${
+                    done ? 'text-ink-primary' : active ? 'text-ink-primary' : 'text-ink-muted'
+                  }`}>{step.label}</p>
+                </div>
+                {/* Connector line */}
+                {idx < STEPS.length - 1 && (
+                  <div className={`h-0.5 w-full -mt-5 mx-1 rounded transition-colors ${done ? 'bg-ink-primary' : 'bg-border-subtle'}`} />
+                )}
               </div>
             );
           })}
         </div>
-
-        {/* Statistics */}
-        <div className="grid grid-cols-2 gap-y-6 gap-x-4">
-          <div>
-            <p className="text-xl font-medium text-ink-primary tabular-nums">{formatNumber(statistics.requests || 0)}</p>
-            <p className="text-[10px] text-ink-secondary uppercase tracking-wider mt-1">Requests</p>
-          </div>
-          <div>
-            <p className="text-xl font-medium text-ink-primary tabular-nums">{formatNumber(statistics.endpoints || 0)}</p>
-            <p className="text-[10px] text-ink-secondary uppercase tracking-wider mt-1">Endpoints</p>
-          </div>
-          <div>
-            <p className="text-xl font-medium text-ink-primary tabular-nums">{formatNumber(statistics.pages || 0)}</p>
-            <p className="text-[10px] text-ink-secondary uppercase tracking-wider mt-1">Tests</p>
-          </div>
-          <div>
-            <p className="text-xl font-medium text-ink-primary tabular-nums">{formatDuration(elapsed)}</p>
-            <p className="text-[10px] text-ink-secondary uppercase tracking-wider mt-1">Elapsed</p>
-          </div>
-        </div>
       </div>
-      
+
+      {/* Errors */}
       {scan.error && (
-        <div className="mt-6 bg-red-500/10 text-red-600 border border-red-500/20 px-4 py-3 rounded-md text-sm">
+        <div className="bg-red-500/8 border border-red-500/20 text-red-500 px-5 py-3.5 rounded-xl text-sm flex items-center gap-3">
+          <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4m0 4h.01" strokeLinecap="round"/></svg>
           {scan.error}
         </div>
       )}
-      
-      {streamError && <p className="mt-4 text-xs text-ink-secondary">{streamError}</p>}
-      
-      <div className="mt-8 border-t border-border-subtle pt-6">
+      {streamError && <p className="text-xs text-ink-secondary px-1">{streamError}</p>}
+
+      {/* Activity log */}
+      <div className="bg-surface-card border border-border-subtle rounded-2xl p-5">
+        <p className="text-[10px] font-bold uppercase tracking-wider text-ink-secondary mb-4">Activity log</p>
         <ActivityLog entries={scan.log} />
       </div>
     </div>

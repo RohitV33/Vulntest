@@ -2,62 +2,57 @@ import { Link } from 'react-router-dom';
 
 export function SignupPage() {
   return (
-    <div className="min-h-[calc(100vh-80px)] flex flex-col justify-center items-center px-6 animate-fade-in bg-surface-bg">
+    <div className="min-h-[calc(100vh-64px)] flex flex-col justify-center items-center px-6 py-16 animate-fade-in bg-surface-bg">
       <div className="w-full max-w-sm">
-        
-        {/* Header */}
-        <div className="mb-8 text-center">
-          <h1 className="text-3xl font-bold text-ink-primary mb-2">Start securing your website</h1>
-          <p className="text-sm text-ink-secondary">Create a free account to begin.</p>
+        <div className="mb-10">
+          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-ink-secondary mb-4">FuzzGuard</p>
+          <h1 className="text-3xl font-bold text-ink-primary tracking-tight mb-2">Create your account.</h1>
+          <p className="text-sm text-ink-secondary">Start securing your applications in minutes.</p>
         </div>
 
-        {/* Form */}
         <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
-          <div>
-            <label className="block text-xs font-semibold text-ink-primary mb-1.5" htmlFor="name">Name</label>
-            <input 
-              type="text" 
-              id="name"
-              className="w-full bg-surface-card border border-border-subtle rounded-md px-4 py-2.5 text-sm text-ink-primary focus:outline-none focus:border-ink-secondary transition-colors"
-              placeholder="Jane Doe"
+          <div className="space-y-1.5">
+            <label className="block text-xs font-semibold text-ink-primary" htmlFor="name">Full name</label>
+            <input
+              type="text" id="name" placeholder="Jane Doe"
+              className="w-full bg-surface-card border border-border-subtle rounded-xl px-4 py-3 text-sm text-ink-primary placeholder-ink-muted focus:outline-none focus:border-ink-secondary focus:ring-2 focus:ring-ink-primary/10 transition-all"
             />
           </div>
-          <div>
-            <label className="block text-xs font-semibold text-ink-primary mb-1.5" htmlFor="email">Email</label>
-            <input 
-              type="email" 
-              id="email"
-              className="w-full bg-surface-card border border-border-subtle rounded-md px-4 py-2.5 text-sm text-ink-primary focus:outline-none focus:border-ink-secondary transition-colors"
-              placeholder="you@example.com"
+          <div className="space-y-1.5">
+            <label className="block text-xs font-semibold text-ink-primary" htmlFor="email">Email</label>
+            <input
+              type="email" id="email" placeholder="you@example.com"
+              className="w-full bg-surface-card border border-border-subtle rounded-xl px-4 py-3 text-sm text-ink-primary placeholder-ink-muted focus:outline-none focus:border-ink-secondary focus:ring-2 focus:ring-ink-primary/10 transition-all font-mono"
             />
           </div>
-          <div>
-            <label className="block text-xs font-semibold text-ink-primary mb-1.5" htmlFor="password">Password</label>
-            <input 
-              type="password" 
-              id="password"
-              className="w-full bg-surface-card border border-border-subtle rounded-md px-4 py-2.5 text-sm text-ink-primary focus:outline-none focus:border-ink-secondary transition-colors"
-              placeholder="••••••••"
+          <div className="space-y-1.5">
+            <label className="block text-xs font-semibold text-ink-primary" htmlFor="password">Password</label>
+            <input
+              type="password" id="password" placeholder="Minimum 8 characters"
+              className="w-full bg-surface-card border border-border-subtle rounded-xl px-4 py-3 text-sm text-ink-primary placeholder-ink-muted focus:outline-none focus:border-ink-secondary focus:ring-2 focus:ring-ink-primary/10 transition-all font-mono"
             />
           </div>
-          
-          <button 
+
+          <button
             type="submit"
-            className="w-full bg-ink-primary text-surface-card rounded-md px-4 py-2.5 text-sm font-medium hover:opacity-90 transition-opacity mt-2"
+            className="w-full bg-ink-primary text-surface-card rounded-xl px-4 py-3 text-sm font-bold hover:opacity-90 transition-opacity mt-2"
           >
-            Create account
+            Create free account →
           </button>
         </form>
 
-        <p className="mt-8 text-center text-xs text-ink-secondary">
-          Already have an account?{' '}
-          <Link to="/login" className="text-ink-primary font-medium hover:underline">
-            Log in
-          </Link>
+        <p className="mt-8 text-center text-[11px] text-ink-secondary leading-relaxed">
+          By signing up, you agree to the{' '}
+          <a href="#" className="text-ink-primary hover:underline font-medium">Terms</a>{' '}and{' '}
+          <a href="#" className="text-ink-primary hover:underline font-medium">Privacy Policy</a>.
+          <br />Only test websites you own or have permission to scan.
         </p>
 
-        <p className="mt-6 text-center text-[10px] text-ink-secondary leading-relaxed max-w-xs mx-auto">
-          By creating an account, you agree to our Terms of Service and Privacy Policy. Only scan websites you have permission to test.
+        <p className="mt-6 text-center text-xs text-ink-secondary">
+          Already have an account?{' '}
+          <Link to="/login" className="text-ink-primary font-bold hover:underline">
+            Sign in →
+          </Link>
         </p>
       </div>
     </div>
