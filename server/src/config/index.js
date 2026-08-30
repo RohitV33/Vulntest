@@ -13,11 +13,11 @@ const int = (value, fallback) => {
 
 export const SERVER_CONFIG = {
   port: int(process.env.PORT, 4000),
-  host: process.env.HOST || '127.0.0.1',
+  host: process.env.HOST || '0.0.0.0',
   // Comma separated list of browser origins allowed to talk to this API.
-  corsOrigins: (process.env.CORS_ORIGIN || 'http://localhost:5173,http://127.0.0.1:5173')
+  corsOrigins: (process.env.CORS_ORIGIN || 'http://localhost:5173,http://127.0.0.1:5173,*')
     .split(',')
-    .map((origin) => origin.trim())
+    .map((origin) => origin.trim().replace(/\/+$/, ''))
     .filter(Boolean),
   // Number of finished scans kept in server memory (the browser keeps history).
   scanRetention: int(process.env.SCAN_RETENTION, 25),

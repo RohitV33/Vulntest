@@ -23,8 +23,19 @@ export function createApp() {
   app.use(
     cors({
       origin(origin, callback) {
-        // Same-origin / curl requests have no Origin header.
-        if (!origin || SERVER_CONFIG.corsOrigins.includes(origin)) {
+        // Same-origin / curl / internal requests have no Origin header.
+        if (!origin) {
+          callback(null, true);
+          return;
+        }
+        const cleanOrigin = origin.replace(/\/+$/, '');
+        const allowed = SERVER_CONFIG.corsOrigins.some((allowedOrigin) => {
+          if (allowedOrigin === '*') return true;
+          if (allowedOrigin.includes('vercel.app') && cleanOrigin.includes('vercel.app')) return true;
+          return allowedOrigin === cleanOrigin;
+        });
+
+        if (allowed) {
           callback(null, true);
           return;
         }
