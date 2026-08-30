@@ -13,7 +13,6 @@ export function ScanLauncher({
   running,
   busy,
   error,
-  config,
 }) {
   const canStart = target.trim() !== '' && authorized && !running && !busy;
 
@@ -27,10 +26,10 @@ export function ScanLauncher({
       {/* Clean Single Heading */}
       <div className="mb-6">
         <h1 className="text-2xl sm:text-3xl font-black text-ink-primary tracking-tight">
-          {running ? 'Security Scan in Progress...' : 'Start New Vulnerability Scan'}
+          {running ? 'Security Audit in Progress...' : 'Start Vulnerability Audit'}
         </h1>
         <p className="text-xs sm:text-sm text-ink-secondary mt-1">
-          Enter a web target to test for common vulnerabilities (SQL Injection, XSS, Path Traversal, Headers).
+          Enter any authorized website URL to run a non-destructive security vulnerability audit.
         </p>
       </div>
 
@@ -83,35 +82,8 @@ export function ScanLauncher({
           </div>
         </div>
 
-        {/* Core Security Checks */}
-        <div className="pt-4 border-t border-border-subtle">
-          <p className="text-xs font-bold uppercase tracking-wider text-ink-muted mb-3">
-            Active Security Checks
-          </p>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            {[
-              { label: 'SQL Injection', desc: 'Differential queries' },
-              { label: 'Cross-Site Scripting', desc: 'Canary reflection' },
-              { label: 'Path Traversal', desc: 'Directory breakout' },
-              { label: 'Security Headers', desc: 'CSP & HSTS inspection' },
-            ].map((check) => (
-              <div key={check.label} className="flex items-center gap-2.5 p-3 rounded-xl bg-surface-bg border border-border-subtle">
-                <div className="w-4 h-4 rounded bg-ink-primary text-surface-card flex items-center justify-center shrink-0">
-                  <svg className="w-2.5 h-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3">
-                    <path d="M5 13l4 4L19 7" strokeLinecap="round" strokeLinejoin="round"/>
-                  </svg>
-                </div>
-                <div>
-                  <p className="text-xs font-bold text-ink-primary leading-tight">{check.label}</p>
-                  <p className="text-[10px] text-ink-muted">{check.desc}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
         {/* Authorization checkbox */}
-        <label className="flex items-start gap-3 cursor-pointer pt-2">
+        <label className="flex items-start gap-3 cursor-pointer pt-1">
           <input
             type="checkbox"
             checked={authorized}
@@ -120,7 +92,7 @@ export function ScanLauncher({
             className="mt-0.5 w-4 h-4 rounded text-ink-primary accent-ink-primary"
           />
           <span className="text-xs text-ink-secondary leading-relaxed">
-            I confirm that I am authorized to test this target URL for non-destructive security assessment.
+            I confirm that I am authorized to audit this target website.
           </span>
         </label>
 
@@ -131,7 +103,7 @@ export function ScanLauncher({
           </div>
         )}
 
-        {/* Action Button */}
+        {/* Single Audit Button */}
         <div>
           {running ? (
             <button
@@ -141,15 +113,15 @@ export function ScanLauncher({
               className="bg-red-500 hover:bg-red-600 text-white px-8 py-3.5 rounded-xl font-bold text-xs transition-colors flex items-center gap-2"
             >
               <span className="w-2 h-2 rounded-full bg-white animate-pulse-dot" />
-              Stop Scan
+              Stop Audit
             </button>
           ) : (
             <button
               type="submit"
               disabled={!canStart}
-              className="bg-ink-primary text-surface-card px-8 py-3.5 rounded-xl font-bold text-xs hover:opacity-90 disabled:opacity-40 transition-opacity flex items-center gap-2"
+              className="bg-ink-primary text-surface-card px-9 py-3.5 rounded-xl font-bold text-xs hover:opacity-90 disabled:opacity-40 transition-opacity flex items-center gap-2 shadow-xs"
             >
-              {busy ? 'Initializing...' : 'Start Assessment →'}
+              {busy ? 'Auditing...' : 'Audit →'}
             </button>
           )}
         </div>
