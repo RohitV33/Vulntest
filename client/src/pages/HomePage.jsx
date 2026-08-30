@@ -226,7 +226,7 @@ function HeroSection() {
               to="/about"
               className="inline-flex items-center gap-2 text-sm font-semibold text-ink-secondary hover:text-ink-primary transition-colors border-b border-transparent hover:border-ink-secondary pb-0.5"
             >
-              Explore FuzzGuard
+              Explore VulnTest
             </Link>
           </motion.div>
 

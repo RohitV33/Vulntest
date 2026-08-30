@@ -18,7 +18,7 @@ export function LoginPage() {
       <div className="flex-1 flex flex-col justify-center px-8 py-16 max-w-md mx-auto w-full">
         <div>
           <div className="mb-10">
-            <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-ink-secondary mb-4">FuzzGuard</p>
+            <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-ink-secondary mb-4">VulnTest</p>
             <h1 className="text-3xl font-bold text-ink-primary tracking-tight mb-2">Welcome back.</h1>
             <p className="text-sm text-ink-secondary">Sign in to continue securing your applications.</p>
           </div>

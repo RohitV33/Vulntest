@@ -52,7 +52,7 @@ function exportJson(scan) {
   const uri = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(scan, null, 2));
   const a = document.createElement('a');
   a.href = uri;
-  a.download = `fuzzguard_${scan.id ?? 'report'}.json`;
+  a.download = `vulntest_${scan.id ?? 'report'}.json`;
   document.body.appendChild(a);
   a.click();
   a.remove();

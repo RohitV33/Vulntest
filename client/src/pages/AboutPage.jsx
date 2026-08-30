@@ -84,7 +84,7 @@ function HeroSection() {
             initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}
             className="text-[10px] font-bold uppercase tracking-[0.25em] text-ink-muted mb-6 flex items-center gap-3"
           >
-            <span className="w-6 h-px bg-ink-muted"/>About FuzzGuard
+            <span className="w-6 h-px bg-ink-muted"/>About VulnTest
           </motion.p>
 
           <motion.h1
@@ -100,7 +100,7 @@ function HeroSection() {
             initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.22 }}
             className="mt-8 text-base text-ink-secondary leading-relaxed max-w-lg font-light"
           >
-            FuzzGuard is a web fuzzing tool designed to help developers discover common vulnerabilities, understand what went wrong, and generate a clear security report.
+            VulnTest is a web fuzzing tool designed to help developers discover common vulnerabilities, understand what went wrong, and generate a clear security report.
           </motion.p>
 
           <motion.div

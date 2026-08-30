@@ -45,7 +45,7 @@ export function DashboardLayout({ children }) {
 
   return (
     <div className="min-h-screen bg-surface-bg flex flex-col md:flex-row text-ink-primary">
-      {/* Mobile Top Header */}
+        {/* Mobile Top Header */}
       <div className="md:hidden flex items-center justify-between px-5 h-16 bg-surface-card border-b border-border-subtle sticky top-0 z-40">
         <Link to="/" className="flex items-center gap-2.5">
           <div className="w-7 h-7 rounded-lg bg-ink-primary flex items-center justify-center text-surface-card">
@@ -53,7 +53,7 @@ export function DashboardLayout({ children }) {
               <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
           </div>
-          <span className="text-sm font-black tracking-tight">FuzzGuard</span>
+          <span className="text-sm font-black tracking-tight">VulnTest</span>
         </Link>
         <button
           onClick={() => setMobileOpen(!mobileOpen)}
@@ -77,7 +77,7 @@ export function DashboardLayout({ children }) {
                 <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
             </div>
-            <span className="text-base font-black tracking-tight text-ink-primary">FuzzGuard</span>
+            <span className="text-base font-black tracking-tight text-ink-primary">VulnTest</span>
           </Link>
         </div>
 
@@ -158,7 +158,7 @@ export function DashboardLayout({ children }) {
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-xs font-bold text-ink-primary truncate">Security Lead</p>
-              <p className="text-[10px] text-ink-secondary truncate font-mono">admin@fuzzguard.io</p>
+              <p className="text-[10px] text-ink-secondary truncate font-mono">admin@vulntest.io</p>
             </div>
           </div>
         </div>

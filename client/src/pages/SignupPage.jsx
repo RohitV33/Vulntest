@@ -16,7 +16,7 @@ export function SignupPage() {
     <div className="min-h-[calc(100vh-64px)] flex flex-col justify-center items-center px-6 py-16 bg-surface-bg">
       <div className="w-full max-w-sm">
         <div className="mb-10">
-          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-ink-secondary mb-4">FuzzGuard</p>
+          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-ink-secondary mb-4">VulnTest</p>
           <h1 className="text-3xl font-black text-ink-primary tracking-tight mb-2">Create your account.</h1>
           <p className="text-sm text-ink-secondary">Start securing your applications in minutes.</p>
         </div>
