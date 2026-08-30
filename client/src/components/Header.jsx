@@ -5,7 +5,7 @@ const NAV = [
   { to: '/scanner', label: 'Scanner' },
   { to: '/reports', label: 'Reports' },
   { to: '/docs', label: 'Documentation' },
-  { to: '/enterprise', label: 'Enterprise' },
+  { to: '/about', label: 'About' },
 ];
 
 export function Header() {
@@ -21,7 +21,7 @@ export function Header() {
             <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" strokeLinecap="round" strokeLinejoin="round"/>
           </svg>
           <span className="text-lg font-semibold tracking-tight text-ink-primary">
-            FuzzGuard
+            VulnTest
           </span>
         </Link>
 

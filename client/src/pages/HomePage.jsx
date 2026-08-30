@@ -1,13 +1,37 @@
 import { Link } from 'react-router-dom';
+import { useState } from 'react';
 import { RevealOnScroll } from '../components/RevealOnScroll.jsx';
+
+// Simple accordion component for FAQ
+function AccordionItem({ title, children }) {
+  const [isOpen, setIsOpen] = useState(false);
+  return (
+    <div className="border-b border-border-subtle">
+      <button 
+        className="w-full text-left py-6 flex justify-between items-center text-ink-primary font-medium hover:text-ink-secondary transition-colors"
+        onClick={() => setIsOpen(!isOpen)}
+      >
+        {title}
+        <span className={`transform transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`}>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M6 9l6 6 6-6"/>
+          </svg>
+        </span>
+      </button>
+      <div className={`overflow-hidden transition-all duration-300 ease-in-out ${isOpen ? 'max-h-96 pb-6 opacity-100' : 'max-h-0 opacity-0'}`}>
+        <p className="text-ink-secondary leading-relaxed font-light text-sm">{children}</p>
+      </div>
+    </div>
+  );
+}
 
 export function HomePage() {
   return (
     <div className="bg-surface-bg flex flex-col justify-center w-full overflow-hidden">
       
-      {/* Hero Section */}
+      {/* 1. HERO SECTION */}
       <section className="relative min-h-screen flex items-center pt-20 pb-32">
-        <div className="absolute inset-0 w-full h-full">
+        <div className="absolute inset-0 w-full h-full pointer-events-none">
           <img 
             src="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&q=80&w=2000"
             alt="Cybersecurity Abstract" 
@@ -30,7 +54,7 @@ export function HomePage() {
           </RevealOnScroll>
 
           <RevealOnScroll delay={200}>
-            <p className="mt-8 text-lg sm:text-xl text-ink-secondary max-w-2xl leading-relaxed font-light">
+            <p className="mt-8 text-lg sm:text-xl text-ink-secondary max-w-2xl leading-relaxed font-light mx-auto">
               Automatically discover and analyze security vulnerabilities in your web applications with a fast, developer-focused fuzzing engine.
             </p>
           </RevealOnScroll>
@@ -44,10 +68,10 @@ export function HomePage() {
                 Start free assessment <span className="text-xl">→</span>
               </Link>
               <Link
-                to="/enterprise"
+                to="/about"
                 className="flex items-center gap-3 bg-surface-card/50 backdrop-blur-md border border-border-subtle text-ink-primary px-10 py-5 rounded-md font-medium text-base hover:bg-surface-card transition-colors duration-300 w-full sm:w-auto justify-center"
               >
-                Book a demo
+                Learn more
               </Link>
             </div>
           </RevealOnScroll>
@@ -62,118 +86,272 @@ export function HomePage() {
         </div>
       </section>
 
-      {/* Floating Cards UI Showcase */}
-      <section className="relative z-20 -mt-20 max-w-7xl mx-auto px-6 w-full hidden lg:block h-[500px] pointer-events-none">
-        <RevealOnScroll delay={0} className="absolute top-[0%] left-[5%] bg-surface-card border border-border-subtle rounded-2xl p-6 shadow-2xl w-72 rotate-[-3deg] backdrop-blur-xl">
-          <p className="text-[10px] font-bold uppercase tracking-wider text-ink-secondary mb-4">Security Score</p>
-          <div className="text-5xl font-light text-ink-primary mb-3 tabular-nums tracking-tighter">87<span className="text-xl text-ink-secondary ml-1">/100</span></div>
-          <div className="flex gap-1.5 mb-3">
-            {[...Array(10)].map((_, i) => (
-              <div key={i} className={`h-2 flex-1 rounded-sm ${i < 8 ? 'bg-ink-primary' : 'bg-border-subtle'}`} />
-            ))}
-          </div>
-          <p className="text-xs font-medium text-ink-secondary">Enterprise standard met</p>
-        </RevealOnScroll>
-
-        <RevealOnScroll delay={200} className="absolute top-[20%] right-[5%] bg-surface-card border border-border-subtle rounded-2xl p-6 shadow-2xl w-64 rotate-[2deg] backdrop-blur-xl">
-          <p className="text-[10px] font-bold uppercase tracking-wider text-ink-secondary mb-5">Active Findings</p>
-          <div className="space-y-4">
-            <div className="flex justify-between items-center text-sm">
-              <span className="flex items-center gap-3"><span className="w-2 h-2 rounded-full bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.5)]"></span>Critical</span>
-              <span className="font-semibold text-ink-primary">1</span>
+      {/* 2. LOGOS / CREDIBILITY */}
+      <section className="py-12 border-y border-border-subtle bg-surface-card/30">
+        <div className="max-w-7xl mx-auto px-6">
+          <RevealOnScroll>
+            <p className="text-center text-xs font-medium text-ink-secondary uppercase tracking-widest mb-8">
+              Trusted by innovative security teams worldwide
+            </p>
+            <div className="flex flex-wrap justify-center items-center gap-12 sm:gap-24 opacity-40 grayscale">
+              {/* Placeholder SVGs for logos */}
+              <svg className="h-8" viewBox="0 0 100 30" fill="currentColor"><path d="M10,20 h20 v-4 h-20 v-4 h20 v-4 h-20 v-4 h-10 v20 h10 z" /></svg>
+              <svg className="h-6" viewBox="0 0 100 30" fill="currentColor"><circle cx="15" cy="15" r="10"/><rect x="35" y="5" width="40" height="20"/></svg>
+              <svg className="h-7" viewBox="0 0 100 30" fill="currentColor"><polygon points="50,5 20,25 80,25"/></svg>
+              <svg className="h-8" viewBox="0 0 100 30" fill="currentColor"><path d="M10 10 h 20 v 10 h -20 z M 40 10 h 20 v 10 h -20 z"/></svg>
             </div>
-            <div className="flex justify-between items-center text-sm">
-              <span className="flex items-center gap-3"><span className="w-2 h-2 rounded-full bg-orange-500 shadow-[0_0_8px_rgba(249,115,22,0.5)]"></span>High</span>
-              <span className="font-semibold text-ink-primary">3</span>
-            </div>
-            <div className="flex justify-between items-center text-sm">
-              <span className="flex items-center gap-3"><span className="w-2 h-2 rounded-full bg-yellow-500 shadow-[0_0_8px_rgba(234,179,8,0.5)]"></span>Medium</span>
-              <span className="font-semibold text-ink-primary">7</span>
-            </div>
-          </div>
-        </RevealOnScroll>
+          </RevealOnScroll>
+        </div>
       </section>
 
-      {/* Feature Grid */}
-      <section className="py-32 bg-surface-card relative overflow-hidden">
-        <div className="max-w-7xl mx-auto px-6 relative z-10">
+      {/* 3. WORKING PROCESS (From Reference Image) */}
+      <section className="py-32 bg-surface-bg relative">
+        <div className="max-w-7xl mx-auto px-6">
           <RevealOnScroll>
-            <h2 className="text-3xl md:text-5xl font-bold text-ink-primary tracking-tight max-w-2xl mb-20">
-              Uncompromising security analysis, beautifully designed.
-            </h2>
+            <div className="mb-16">
+              <span className="inline-block px-3 py-1 bg-surface-card border border-border-subtle text-ink-secondary text-[10px] font-bold uppercase tracking-widest rounded-full mb-4">
+                Workflow
+              </span>
+              <h2 className="text-3xl md:text-5xl font-bold text-ink-primary tracking-tight">
+                Working <span className="text-ink-secondary">Process</span>
+              </h2>
+            </div>
           </RevealOnScroll>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
-            <RevealOnScroll delay={0}>
-              <div className="space-y-4">
-                <div className="w-12 h-12 rounded-full bg-surface-bg border border-border-subtle flex items-center justify-center text-ink-primary mb-6">
-                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+          <div className="space-y-6">
+            <RevealOnScroll delay={100}>
+              <div className="flex items-start gap-6 p-8 rounded-2xl bg-surface-card border border-border-subtle shadow-sm hover:border-ink-secondary transition-colors group">
+                <div className="flex items-center justify-center w-12 h-12 rounded-full bg-surface-bg border border-border-subtle text-ink-primary font-mono text-sm group-hover:bg-ink-primary group-hover:text-surface-card transition-colors">
+                  01
                 </div>
-                <h3 className="text-xl font-bold text-ink-primary">Deep Fuzzing</h3>
-                <p className="text-ink-secondary leading-relaxed font-light">
-                  Our proprietary engine mutates thousands of payloads per second to find obscure injection points and edge cases.
-                </p>
+                <div>
+                  <h3 className="text-lg font-semibold text-ink-primary mb-2">Enter Target</h3>
+                  <p className="text-ink-secondary font-light">User inputs the target URL or API endpoint to test. Our engine instantly verifies connectivity and reads basic configuration files like robots.txt.</p>
+                </div>
               </div>
             </RevealOnScroll>
 
-            <RevealOnScroll delay={150}>
-              <div className="space-y-4">
-                <div className="w-12 h-12 rounded-full bg-surface-bg border border-border-subtle flex items-center justify-center text-ink-primary mb-6">
-                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+            <RevealOnScroll delay={200}>
+              <div className="flex items-start gap-6 p-8 rounded-2xl bg-surface-card border border-border-subtle shadow-sm hover:border-ink-secondary transition-colors group">
+                <div className="flex items-center justify-center w-12 h-12 rounded-full bg-surface-bg border border-border-subtle text-ink-primary font-mono text-sm group-hover:bg-ink-primary group-hover:text-surface-card transition-colors">
+                  02
                 </div>
-                <h3 className="text-xl font-bold text-ink-primary">Editorial Reports</h3>
-                <p className="text-ink-secondary leading-relaxed font-light">
-                  Export stunning, boardroom-ready PDF and JSON reports. Security shouldn't just be secure—it should look good.
-                </p>
+                <div>
+                  <h3 className="text-lg font-semibold text-ink-primary mb-2">Deep Fuzzing</h3>
+                  <p className="text-ink-secondary font-light">The engine crawls the application, identifies attack surfaces, and mutates payloads to find SQLi, XSS, and other injection vulnerabilities at scale.</p>
+                </div>
               </div>
             </RevealOnScroll>
 
             <RevealOnScroll delay={300}>
-              <div className="space-y-4">
-                <div className="w-12 h-12 rounded-full bg-surface-bg border border-border-subtle flex items-center justify-center text-ink-primary mb-6">
-                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
+              <div className="flex items-start gap-6 p-8 rounded-2xl bg-surface-card border border-border-subtle shadow-sm hover:border-ink-secondary transition-colors group">
+                <div className="flex items-center justify-center w-12 h-12 rounded-full bg-surface-bg border border-border-subtle text-ink-primary font-mono text-sm group-hover:bg-ink-primary group-hover:text-surface-card transition-colors">
+                  03
                 </div>
-                <h3 className="text-xl font-bold text-ink-primary">Zero Setup</h3>
-                <p className="text-ink-secondary leading-relaxed font-light">
-                  No agents to install, no complicated configurations. Just enter a URL and start scanning in seconds.
-                </p>
+                <div>
+                  <h3 className="text-lg font-semibold text-ink-primary mb-2">Actionable Reporting</h3>
+                  <p className="text-ink-secondary font-light">Receive a clean, beautifully formatted report detailing exactly where the vulnerabilities exist and how to remediate them before deployment.</p>
+                </div>
               </div>
             </RevealOnScroll>
           </div>
         </div>
       </section>
 
-      {/* Large Image Showcase */}
-      <section className="py-32 px-6 max-w-7xl mx-auto">
-        <RevealOnScroll>
-          <div className="rounded-3xl overflow-hidden border border-border-subtle shadow-2xl relative aspect-[16/9]">
-            <img 
-              src="https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&q=80&w=2000"
-              alt="Cybersecurity Code Analysis"
-              className="w-full h-full object-cover"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-surface-bg to-transparent flex items-end p-12">
-              <div className="max-w-xl">
-                <h3 className="text-3xl font-bold text-ink-primary mb-4">Precision Analysis</h3>
-                <p className="text-ink-secondary text-lg">Every line of code, every endpoint, every parameter rigorously tested against modern threat vectors.</p>
+      {/* 4. HIGHLIGHTED FEATURES SECTION (Images/Video) */}
+      <section className="py-32 bg-surface-card relative overflow-hidden">
+        <div className="max-w-7xl mx-auto px-6 space-y-32">
+          
+          {/* Feature 1 */}
+          <div className="flex flex-col lg:flex-row items-center gap-16">
+            <RevealOnScroll className="flex-1 w-full">
+              <div className="aspect-[4/3] rounded-2xl overflow-hidden border border-border-subtle shadow-2xl relative bg-surface-bg">
+                <img 
+                  src="https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&q=80&w=1200" 
+                  alt="Code Analysis" 
+                  className="w-full h-full object-cover opacity-80"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-surface-bg to-transparent opacity-60" />
+                
+                {/* Floating UI Element */}
+                <div className="absolute bottom-8 left-8 right-8 bg-surface-card/90 backdrop-blur border border-border-subtle rounded-xl p-4 shadow-xl">
+                  <div className="flex justify-between items-center text-xs mb-2">
+                    <span className="font-mono text-ink-secondary">Status: Scanning...</span>
+                    <span className="text-ink-primary font-bold">86%</span>
+                  </div>
+                  <div className="h-1.5 w-full bg-surface-bg rounded-full overflow-hidden">
+                    <div className="h-full bg-ink-primary w-[86%]"></div>
+                  </div>
+                </div>
               </div>
-            </div>
+            </RevealOnScroll>
+            
+            <RevealOnScroll delay={200} className="flex-1 space-y-6">
+              <span className="text-[10px] font-bold uppercase tracking-widest text-ink-secondary">Intelligent Fuzzing</span>
+              <h3 className="text-3xl md:text-4xl font-bold text-ink-primary tracking-tight">Highlight what sets your security apart</h3>
+              <p className="text-ink-secondary leading-relaxed font-light">
+                Our proprietary scanning engine uses advanced heuristics to identify endpoints that traditional scanners miss. It intelligently mutates data payloads to bypass standard WAFs and expose underlying logical flaws.
+              </p>
+              <ul className="space-y-3 text-sm text-ink-secondary pt-4">
+                <li className="flex items-center gap-3"><span className="text-ink-primary">✓</span> Payload Mutation Engine</li>
+                <li className="flex items-center gap-3"><span className="text-ink-primary">✓</span> Automated Endpoint Discovery</li>
+                <li className="flex items-center gap-3"><span className="text-ink-primary">✓</span> Zero-day heuristics mapping</li>
+              </ul>
+            </RevealOnScroll>
           </div>
-        </RevealOnScroll>
+
+          {/* Feature 2 */}
+          <div className="flex flex-col lg:flex-row-reverse items-center gap-16">
+            <RevealOnScroll className="flex-1 w-full">
+              <div className="aspect-[4/3] rounded-2xl overflow-hidden border border-border-subtle shadow-2xl relative bg-surface-bg">
+                <img 
+                  src="https://images.unsplash.com/photo-1555949963-aa79dcee981c?auto=format&fit=crop&q=80&w=1200" 
+                  alt="Reporting Dashboard" 
+                  className="w-full h-full object-cover opacity-80 mix-blend-luminosity"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-surface-bg to-transparent opacity-60" />
+                
+                {/* Floating UI Element */}
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-surface-card/90 backdrop-blur border border-border-subtle rounded-xl p-6 shadow-xl w-64 text-center">
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-ink-secondary mb-2">Security Score</p>
+                  <p className="text-5xl font-light text-ink-primary tabular-nums">92</p>
+                </div>
+              </div>
+            </RevealOnScroll>
+            
+            <RevealOnScroll delay={200} className="flex-1 space-y-6">
+              <span className="text-[10px] font-bold uppercase tracking-widest text-ink-secondary">Editorial Reports</span>
+              <h3 className="text-3xl md:text-4xl font-bold text-ink-primary tracking-tight">Boardroom-ready security analytics</h3>
+              <p className="text-ink-secondary leading-relaxed font-light">
+                Security shouldn't just be secure—it should look good. FuzzGuard translates complex technical vulnerabilities into clear, actionable insights that both developers and executives can understand.
+              </p>
+              <Link to="/reports" className="inline-flex items-center gap-2 text-sm font-medium text-ink-primary hover:opacity-80 transition-opacity mt-4 border-b border-ink-primary pb-1">
+                View sample report →
+              </Link>
+            </RevealOnScroll>
+          </div>
+
+        </div>
       </section>
 
-      {/* Final CTA */}
-      <section className="py-32 border-t border-border-subtle bg-surface-bg text-center px-6">
+      {/* 5. WHY CHOOSE US */}
+      <section className="py-32 bg-surface-bg border-t border-border-subtle">
+        <div className="max-w-7xl mx-auto px-6 text-center">
+          <RevealOnScroll>
+            <h2 className="text-3xl md:text-5xl font-bold text-ink-primary tracking-tight mb-16">
+              Why Choose FuzzGuard
+            </h2>
+          </RevealOnScroll>
+
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+            {[
+              { title: "Lightning Fast", desc: "Optimized rust-based engine performs thousands of requests per second." },
+              { title: "Zero Config", desc: "No agents, no complex setup. Just enter a URL and start." },
+              { title: "CI/CD Ready", desc: "Integrate easily into your pipeline via our REST API." },
+              { title: "Developer First", desc: "Clear remediation steps with precise code references." }
+            ].map((item, idx) => (
+              <RevealOnScroll key={item.title} delay={idx * 100}>
+                <div className="text-center p-6 border border-transparent hover:border-border-subtle rounded-xl transition-colors h-full">
+                  <div className="w-10 h-10 mx-auto rounded-full bg-surface-card border border-border-subtle flex items-center justify-center text-ink-primary mb-4 font-mono text-xs">
+                    {idx + 1}
+                  </div>
+                  <h4 className="text-lg font-bold text-ink-primary mb-2">{item.title}</h4>
+                  <p className="text-sm text-ink-secondary font-light">{item.desc}</p>
+                </div>
+              </RevealOnScroll>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* 6. REVIEWS SECTION */}
+      <section className="py-32 bg-surface-card border-y border-border-subtle">
+        <div className="max-w-7xl mx-auto px-6">
+          <RevealOnScroll>
+            <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
+              <h2 className="text-3xl md:text-4xl font-bold text-ink-primary tracking-tight max-w-lg">
+                Let happy users convince the rest.
+              </h2>
+            </div>
+          </RevealOnScroll>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {[
+              { name: "Alex Chen", role: "CTO, FinTech Startup", text: "FuzzGuard caught 3 critical SSRF vulnerabilities right before our major launch. The interface is stunning and the reporting is unparalleled." },
+              { name: "Sarah Jenkins", role: "Lead DevSecOps", text: "Finally, a scanner that developers actually want to use. The zero-config setup meant we deployed it across all 40 of our microservices in one afternoon." },
+              { name: "Marcus Rodriguez", role: "Security Consultant", text: "I generate FuzzGuard's PDF reports directly for my clients. The presentation layer alone is worth the investment." }
+            ].map((review, idx) => (
+              <RevealOnScroll key={review.name} delay={idx * 150}>
+                <div className="bg-surface-bg p-8 rounded-2xl border border-border-subtle h-full flex flex-col justify-between">
+                  <p className="text-ink-secondary font-light italic mb-8">"{review.text}"</p>
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-surface-card border border-border-subtle flex items-center justify-center text-ink-primary text-xs font-bold uppercase">
+                      {review.name.substring(0,2)}
+                    </div>
+                    <div>
+                      <p className="text-sm font-bold text-ink-primary">{review.name}</p>
+                      <p className="text-xs text-ink-secondary">{review.role}</p>
+                    </div>
+                  </div>
+                </div>
+              </RevealOnScroll>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* 7. FAQ SECTION */}
+      <section className="py-32 bg-surface-bg">
+        <div className="max-w-3xl mx-auto px-6">
+          <RevealOnScroll>
+            <h2 className="text-3xl font-bold text-ink-primary text-center mb-12">Frequently Asked Questions</h2>
+          </RevealOnScroll>
+          
+          <RevealOnScroll delay={100} className="border-t border-border-subtle">
+            <AccordionItem title="Do I need to install any agents?">
+              No. FuzzGuard is a fully cloud-based platform. You only need to verify ownership of your target application to begin scanning.
+            </AccordionItem>
+            <AccordionItem title="Is it safe to run on production environments?">
+              We offer a specific "Safe Mode" for production environments which uses non-destructive payloads and carefully paces requests to avoid performance impacts.
+            </AccordionItem>
+            <AccordionItem title="How long does a typical scan take?">
+              A standard scan usually takes between 5 to 15 minutes depending on the size of your application. Deep fuzzing on large apps may take longer.
+            </AccordionItem>
+            <AccordionItem title="Can I integrate this into GitHub Actions?">
+              Yes, we provide a CLI tool and native CI/CD integrations for GitHub, GitLab, and Bitbucket.
+            </AccordionItem>
+          </RevealOnScroll>
+        </div>
+      </section>
+
+      {/* 8. CTA SECTION */}
+      <section className="py-32 border-t border-border-subtle bg-surface-card text-center px-6">
         <RevealOnScroll>
-          <h2 className="text-4xl md:text-6xl font-bold text-ink-primary tracking-tight mb-8">
-            Ready to secure your stack?
-          </h2>
-          <Link
-            to="/signup"
-            className="inline-flex items-center gap-3 bg-ink-primary text-surface-card px-12 py-5 rounded-md font-bold text-lg hover:scale-105 transition-transform duration-300 shadow-xl"
-          >
-            Create free account
-          </Link>
+          <div className="max-w-4xl mx-auto flex flex-col items-center">
+            <div className="w-16 h-16 bg-ink-primary rounded-2xl mb-8 flex items-center justify-center transform rotate-12">
+              <svg className="w-8 h-8 text-surface-card transform -rotate-12" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
+            </div>
+            <h2 className="text-4xl md:text-6xl font-bold text-ink-primary tracking-tight mb-6">
+              Wrap up with a confident CTA.
+            </h2>
+            <p className="text-lg text-ink-secondary font-light max-w-2xl mb-10">
+              Join thousands of developers securing their applications automatically. Start your free assessment today.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4">
+              <Link
+                to="/signup"
+                className="inline-flex items-center justify-center gap-3 bg-ink-primary text-surface-card px-10 py-4 rounded-md font-bold text-sm hover:scale-105 transition-transform duration-300 shadow-xl"
+              >
+                Create free account
+              </Link>
+              <Link
+                to="/scanner"
+                className="inline-flex items-center justify-center gap-3 bg-surface-bg border border-border-subtle text-ink-primary px-10 py-4 rounded-md font-bold text-sm hover:border-ink-secondary transition-colors duration-300"
+              >
+                Try live demo
+              </Link>
+            </div>
+          </div>
         </RevealOnScroll>
       </section>
     </div>
