@@ -1,6 +1,6 @@
 const PRESETS = [
-  { label: 'PHP Testbed (Vulnerable Demo)', url: 'http://testphp.vulnweb.com' },
-  { label: 'ASP Testbed', url: 'http://testasp.vulnweb.com' },
+  { label: 'Altoro Mutual (Fast Demo)', url: 'http://altoro.testfire.net' },
+  { label: 'Acunetix PHP Testbed', url: 'http://testphp.vulnweb.com' },
 ];
 
 export function ScanLauncher({

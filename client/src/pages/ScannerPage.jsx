@@ -14,7 +14,7 @@ const FALLBACK_CONFIG = {
   maxPages: 50,
   maxDepth: 3,
   concurrency: 2,
-  requestTimeoutMs: 10_000,
+  requestTimeoutMs: 30_000,
   delayMs: 250,
   maxRequests: 1_000,
   maxScanDurationMs: 600_000,
