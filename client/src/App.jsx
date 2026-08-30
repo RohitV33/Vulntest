@@ -1,40 +1,49 @@
-import { Navigate, Route, Routes } from 'react-router-dom';
+import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import { Header } from './components/Header.jsx';
+import { DashboardLayout } from './components/DashboardLayout.jsx';
 import { HomePage } from './pages/HomePage.jsx';
+import { LoginPage } from './pages/LoginPage.jsx';
+import { SignupPage } from './pages/SignupPage.jsx';
 import { DashboardPage } from './pages/DashboardPage.jsx';
+import { ScannerPage } from './pages/ScannerPage.jsx';
 import { HistoryPage } from './pages/HistoryPage.jsx';
 import { ScanViewPage } from './pages/ScanViewPage.jsx';
 import { AboutPage } from './pages/AboutPage.jsx';
 
 export default function App() {
-  return (
-    <div className="min-h-screen bg-surface-0 flex flex-col justify-between transition-colors">
-      <div>
-        <Header />
-        <main className="mx-auto max-w-[1400px] px-4 py-6 sm:px-6">
-          <Routes>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/scanner" element={<DashboardPage />} />
-            <Route path="/history" element={<HistoryPage />} />
-            <Route path="/scans/:id" element={<ScanViewPage />} />
-            <Route path="/about" element={<AboutPage />} />
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
-        </main>
-      </div>
+  const location = useLocation();
+  
+  // List of paths that should use the DashboardLayout
+  const dashboardPaths = ['/dashboard', '/scanner', '/history', '/scans'];
+  const isDashboardRoute = dashboardPaths.some(path => location.pathname.startsWith(path));
 
-      <footer className="border-t border-line/60 bg-surface-1/50 py-6 transition-colors">
-        <div className="mx-auto flex max-w-[1400px] flex-col items-center justify-between gap-3 px-6 text-center sm:flex-row sm:text-left">
-          <div className="flex items-center gap-2">
-            <span className="h-2 w-2 rounded-full bg-good"></span>
-            <span className="text-xs font-semibold text-ink">AegisScan Security Engine</span>
-            <span className="text-xs text-ink-muted">· Authorized Auditing Only</span>
-          </div>
-          <p className="text-[11px] text-ink-muted">
-            Non-destructive scanning engine. Scan results are stored in browser localStorage.
-          </p>
-        </div>
-      </footer>
+  if (isDashboardRoute) {
+    return (
+      <DashboardLayout>
+        <Routes>
+          <Route path="/dashboard" element={<DashboardPage />} />
+          <Route path="/scanner" element={<ScannerPage />} />
+          <Route path="/history" element={<HistoryPage />} />
+          <Route path="/scans/:id" element={<ScanViewPage />} />
+          <Route path="*" element={<Navigate to="/dashboard" replace />} />
+        </Routes>
+      </DashboardLayout>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-surface-bg flex flex-col transition-colors">
+      <Header />
+      
+      <main className="flex-1 mx-auto max-w-7xl w-full">
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/signup" element={<SignupPage />} />
+          <Route path="/about" element={<AboutPage />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </main>
     </div>
   );
 }
