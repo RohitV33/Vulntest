@@ -51,12 +51,15 @@ export function createApp() {
   // Rate limiters key on the client address; trust only a local reverse proxy.
   app.set('trust proxy', 'loopback');
 
-  app.get('/api/health', (_req, res) => {
+  app.get(['/health', '/api/health'], (_req, res) => {
     res.json({ status: 'ok', uptimeSeconds: Math.round(process.uptime()) });
   });
 
+  // Support both /api prefixes and root prefixes
   app.use('/api', apiLimiter, metaRouter);
+  app.use('/', apiLimiter, metaRouter);
   app.use('/api/scans', apiLimiter, scansRouter);
+  app.use('/scans', apiLimiter, scansRouter);
 
   app.use(notFound);
   app.use(errorHandler);

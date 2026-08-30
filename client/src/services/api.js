@@ -6,7 +6,9 @@
  */
 import axios from 'axios';
 
-export const API_BASE = import.meta.env.VITE_API_BASE || '/api';
+let rawBase = import.meta.env.VITE_API_BASE || '/api';
+rawBase = rawBase.trim().replace(/\/+$/, '');
+export const API_BASE = rawBase;
 
 const client = axios.create({
   baseURL: API_BASE,
