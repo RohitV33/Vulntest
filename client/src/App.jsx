@@ -9,6 +9,7 @@ import { ScannerPage } from './pages/ScannerPage.jsx';
 import { HistoryPage } from './pages/HistoryPage.jsx';
 import { ScanViewPage } from './pages/ScanViewPage.jsx';
 import { AboutPage } from './pages/AboutPage.jsx';
+import { ReportsPage } from './pages/ReportsPage.jsx';
 
 export default function App() {
   const location = useLocation();
@@ -41,6 +42,7 @@ export default function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignupPage />} />
           <Route path="/about" element={<AboutPage />} />
+          <Route path="/reports" element={<ReportsPage />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>
