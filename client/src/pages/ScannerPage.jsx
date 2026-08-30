@@ -4,8 +4,6 @@ import { ScanLauncher } from '../components/ScanLauncher.jsx';
 import { ConfigDialog } from '../components/ConfigDialog.jsx';
 import { ProgressPanel } from '../components/ProgressPanel.jsx';
 import { ScanResults } from '../components/ScanResults.jsx';
-import { Card } from '../components/ui/Card.jsx';
-import { EmptyState } from '../components/ui/EmptyState.jsx';
 import { useScanStream } from '../hooks/useScanStream.js';
 import { useScanHistory } from '../hooks/useScanHistory.js';
 import { getScanConfig, startScan, stopScan } from '../services/api.js';
@@ -161,7 +159,13 @@ export function ScannerPage() {
   const running = Boolean(scan) && !finished;
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="space-y-6">
+      {/* Page heading */}
+      <div className="mb-2">
+        <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-ink-secondary mb-1">Security Scanner</p>
+        <h1 className="text-3xl font-black tracking-tight text-ink-primary">New assessment</h1>
+      </div>
+
       <ScanLauncher
         target={target}
         onTargetChange={setTarget}
@@ -176,29 +180,33 @@ export function ScannerPage() {
         config={config}
       />
 
-      {privateTargetsAllowed ? (
-        <Card className="border-sev-medium/40 bg-sev-medium/5">
-          <p className="text-xs text-ink-2">
-            <span className="font-medium text-ink">Private targets are enabled on this backend.</span>{' '}
-            ALLOW_PRIVATE_TARGETS is set, so localhost and private network addresses can be scanned.
-          </p>
-        </Card>
-      ) : null}
+      {/* Private targets notice */}
+      {privateTargetsAllowed && (
+        <div className="flex items-start gap-3 bg-yellow-500/8 border border-yellow-500/20 text-yellow-700 dark:text-yellow-400 px-5 py-4 rounded-2xl text-sm">
+          <svg className="w-4 h-4 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+            <path d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+          <p><span className="font-bold">Private targets are enabled.</span> Localhost and private network addresses can be scanned on this backend.</p>
+        </div>
+      )}
 
-      {quotaWarning ? (
-        <Card className="border-sev-medium/40">
-          <p className="text-xs text-ink-2">
-            This scan could not be saved to localStorage - the browser store is full. Delete older scans from{' '}
-            <Link to="/history" className="text-accent underline underline-offset-2">
-              scan history
-            </Link>{' '}
-            to make room.
+      {/* Quota warning */}
+      {quotaWarning && (
+        <div className="flex items-start gap-3 bg-orange-500/8 border border-orange-500/20 text-orange-600 px-5 py-4 rounded-2xl text-sm">
+          <svg className="w-4 h-4 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+            <circle cx="12" cy="12" r="10"/><path d="M12 8v4m0 4h.01" strokeLinecap="round"/>
+          </svg>
+          <p>
+            Browser storage is full — this scan was not saved.{' '}
+            <Link to="/reports" className="font-bold underline underline-offset-2 hover:no-underline">Open Reports</Link>{' '}
+            to delete older scans.
           </p>
-        </Card>
-      ) : null}
+        </div>
+      )}
 
+      {/* Active scan view OR empty state */}
       {scan ? (
-        <div className="space-y-6 animate-slide-up">
+        <div className="space-y-5">
           <ProgressPanel scan={scan} connected={connected} streamError={streamError} />
           <ScanResults
             scan={{ ...scan, findings: findingsWithStatus }}
@@ -206,32 +214,25 @@ export function ScannerPage() {
           />
         </div>
       ) : (
-        <div className="rounded-2xl border border-line bg-surface-1 p-8 text-center shadow-xs">
-          <div className="mx-auto grid h-12 w-12 place-items-center rounded-2xl bg-accent/10 text-accent mb-4">
-            <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="1.8">
-              <circle cx="12" cy="12" r="10" />
-              <line x1="12" y1="8" x2="12" y2="12" />
-              <line x1="12" y1="16" x2="12.01" y2="16" />
+        <div className="bg-surface-card border border-border-subtle rounded-2xl p-12 text-center">
+          <div className="w-14 h-14 rounded-2xl bg-surface-raised border border-border-subtle flex items-center justify-center mx-auto mb-5 text-ink-secondary">
+            <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.6">
+              <circle cx="11" cy="11" r="8"/>
+              <path d="m21 21-4.35-4.35" strokeLinecap="round"/>
             </svg>
           </div>
-          <h3 className="text-base font-bold text-ink">Ready for Security Assessment</h3>
-          <p className="mx-auto mt-2 max-w-lg text-xs leading-relaxed text-ink-2">
-            Enter any authorized target above or select a preset pill like{' '}
-            <strong className="text-ink">Acunetix PHP Testbed</strong> to begin. The crawler will map endpoints and
-            execute safe, non-destructive vulnerability checks.
+          <h3 className="text-lg font-black text-ink-primary mb-2">Ready to assess</h3>
+          <p className="text-sm text-ink-secondary max-w-md mx-auto leading-relaxed">
+            Enter a target URL above and confirm authorization to begin. The crawler will map all reachable endpoints and run safe, non-destructive vulnerability checks.
           </p>
-          <div className="mt-4 flex items-center justify-center gap-3">
-            <Link
-              to="/history"
-              className="inline-flex items-center gap-1.5 rounded-lg border border-line bg-surface-2 px-3 py-1.5 text-xs font-semibold text-ink hover:border-accent hover:text-accent transition-colors"
-            >
-              Open Previous Scans
+          <div className="mt-7 flex items-center justify-center gap-3 flex-wrap">
+            <Link to="/reports"
+              className="inline-flex items-center gap-2 px-5 py-2.5 border border-border-subtle bg-surface-bg text-ink-secondary rounded-xl text-xs font-bold hover:border-ink-secondary hover:text-ink-primary transition-colors">
+              View past reports
             </Link>
-            <Link
-              to="/about"
-              className="inline-flex items-center gap-1.5 rounded-lg border border-line bg-surface-2 px-3 py-1.5 text-xs font-semibold text-ink hover:border-accent hover:text-accent transition-colors"
-            >
-              Learn How Checks Stay Safe
+            <Link to="/about"
+              className="inline-flex items-center gap-2 px-5 py-2.5 border border-border-subtle bg-surface-bg text-ink-secondary rounded-xl text-xs font-bold hover:border-ink-secondary hover:text-ink-primary transition-colors">
+              How checks work
             </Link>
           </div>
         </div>
