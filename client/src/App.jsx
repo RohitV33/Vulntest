@@ -35,7 +35,7 @@ export default function App() {
     <div className="min-h-screen bg-surface-bg flex flex-col transition-colors">
       <Header />
       
-      <main className="flex-1 mx-auto max-w-7xl w-full">
+      <main className="flex-1 w-full">
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/login" element={<LoginPage />} />
