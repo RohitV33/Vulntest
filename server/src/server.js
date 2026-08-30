@@ -4,9 +4,12 @@ import { logger } from './utils/logger.js';
 
 const app = createApp();
 
-const server = app.listen(SERVER_CONFIG.port, SERVER_CONFIG.host, () => {
+const host = process.env.HOST || '0.0.0.0';
+const port = Number(process.env.PORT) || SERVER_CONFIG.port || 4000;
+
+const server = app.listen(port, host, () => {
   logger.info('scanner API listening', {
-    url: `http://${SERVER_CONFIG.host}:${SERVER_CONFIG.port}`,
+    url: `http://${host}:${port}`,
     allowedOrigins: SERVER_CONFIG.corsOrigins,
   });
 
