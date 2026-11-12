@@ -147,10 +147,11 @@ export function ConfigDialog({ open, config, limits, onSave, onClose }) {
           {/* Scope and Sandbox Rules */}
           <div className="pt-2 border-t border-border-subtle">
             <h3 className="text-xs font-bold uppercase tracking-wider text-ink-muted mb-3">
-              Scope & Sandbox Constraints
+              Scope & Discovery Constraints
             </h3>
             <div className="space-y-2.5">
               {[
+                { key: 'includeSitemap', label: 'Ingest Sitemap.xml & Discovery', hint: 'Extracts URLs from /sitemap.xml and robots.txt to seed the crawl.' },
                 { key: 'respectRobots', label: 'Respect robots.txt Directives', hint: 'Honours Disallow paths and crawl delay throttling.' },
                 { key: 'testForms', label: 'Test GET Form Inputs', hint: 'Injects into search forms (password fields excluded).' },
                 { key: 'testPostForms', label: 'Submit POST Forms (Advanced)', hint: 'Disabled by default to avoid creating unwanted state.' },
@@ -158,7 +159,7 @@ export function ConfigDialog({ open, config, limits, onSave, onClose }) {
                 <label key={option.key} className="flex items-start gap-3 cursor-pointer">
                   <input
                     type="checkbox"
-                    checked={Boolean(draft[option.key])}
+                    checked={draft[option.key] !== false}
                     onChange={(e) => setFlag(option.key, e.target.checked)}
                     className="mt-0.5 w-4 h-4 rounded text-ink-primary accent-ink-primary"
                   />
@@ -168,6 +169,45 @@ export function ConfigDialog({ open, config, limits, onSave, onClose }) {
                   </div>
                 </label>
               ))}
+            </div>
+          </div>
+
+          {/* Authentication & Session Headers */}
+          <div className="pt-2 border-t border-border-subtle">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-ink-muted mb-3">
+              Authenticated Scanning (Headers & Cookies)
+            </h3>
+            <p className="text-[11px] text-ink-secondary mb-3 leading-relaxed">
+              Audit protected views by attaching authorization tokens or session cookies to every crawler and probe request.
+            </p>
+            <div className="space-y-3.5">
+              <div className="space-y-1.5">
+                <label htmlFor="authHeader" className="block text-xs font-semibold text-ink-primary">
+                  Authorization Header
+                </label>
+                <input
+                  id="authHeader"
+                  type="text"
+                  placeholder="Bearer eyJhbGciOiJIUzI1NiIsIn..."
+                  value={draft.authorization || draft.headers?.['Authorization'] || ''}
+                  onChange={(e) => setText('authorization', e.target.value)}
+                  className="w-full rounded-xl border border-border-subtle bg-surface-bg px-3.5 py-2.5 text-xs font-mono text-ink-primary placeholder:text-ink-muted focus:outline-none focus:border-ink-secondary focus:ring-2 focus:ring-ink-primary/10 transition-all"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <label htmlFor="cookieHeader" className="block text-xs font-semibold text-ink-primary">
+                  Session Cookie(s)
+                </label>
+                <input
+                  id="cookieHeader"
+                  type="text"
+                  placeholder="sessionid=1a2b3c4d5e; auth_token=xyz987"
+                  value={draft.cookies || draft.headers?.['Cookie'] || ''}
+                  onChange={(e) => setText('cookies', e.target.value)}
+                  className="w-full rounded-xl border border-border-subtle bg-surface-bg px-3.5 py-2.5 text-xs font-mono text-ink-primary placeholder:text-ink-muted focus:outline-none focus:border-ink-secondary focus:ring-2 focus:ring-ink-primary/10 transition-all"
+                />
+              </div>
             </div>
           </div>
         </div>
