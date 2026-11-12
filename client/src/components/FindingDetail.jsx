@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { formatDateTime } from '../utils/format.js';
 
 const SEV_BADGE = {
@@ -11,7 +11,30 @@ const SEV_BADGE = {
 
 const TRIAGE_OPTIONS = ['Open', 'Confirmed', 'False positive', 'Fixed'];
 
+function generateCurl(finding) {
+  if (!finding || !finding.url) return '';
+  const method = (finding.request?.method || finding.method || 'GET').toUpperCase();
+  const targetUrl = finding.request?.url || finding.url;
+
+  const lines = [`curl -i -X ${method} "${targetUrl}"`];
+
+  const headers = finding.request?.headers || finding.headers || {};
+  for (const [key, val] of Object.entries(headers)) {
+    if (val && typeof val === 'string') {
+      lines.push(`  -H "${key}: ${val.replace(/"/g, '\\"')}"`);
+    }
+  }
+
+  if (finding.request?.body) {
+    lines.push(`  --data "${finding.request.body.replace(/"/g, '\\"')}"`);
+  }
+
+  return lines.join(' \\\n');
+}
+
 export function FindingDetail({ finding, onClose, onStatusChange }) {
+  const [copied, setCopied] = useState(false);
+
   useEffect(() => {
     if (!finding) return undefined;
     const onKeyDown = (event) => {
@@ -22,6 +45,26 @@ export function FindingDetail({ finding, onClose, onStatusChange }) {
   }, [finding, onClose]);
 
   if (!finding) return null;
+
+  const handleCopyCurl = async () => {
+    const cmd = generateCurl(finding);
+    try {
+      if (navigator?.clipboard?.writeText) {
+        await navigator.clipboard.writeText(cmd);
+      } else {
+        const textarea = document.createElement('textarea');
+        textarea.value = cmd;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+      }
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      // fallback
+    }
+  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">

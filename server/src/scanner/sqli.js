@@ -82,6 +82,11 @@ export async function checkSqli(ctx, point) {
         `Probe value: ${base}' -> HTTP ${quoted.status}, matched ${quotedError.label || 'SQL'} error signature\n` +
         `Balanced probe: ${base}'' -> ${balanced.ok ? `HTTP ${balanced.status}, ${balancedClean ? 'no error' : 'error still present'}` : 'request failed'}\n` +
         `Error text: ${quotedError.match}`,
+      request: {
+        method: point.method,
+        url: quoted.url,
+        headers: ctx.config.headers || {},
+      },
       recommendation: RECOMMENDATION,
       references: ['https://owasp.org/www-community/attacks/SQL_Injection', 'CWE-89'],
     });
@@ -149,10 +154,27 @@ export async function checkSqli(ctx, point) {
     const pairDiffers = pairSimilarity < noiseFloor - DIFFERENCE_MARGIN;
 
     if (truthyMatchesBaseline && falsyDiffers && pairDiffers) {
+      // Differential verification: test a second pair with alternate values to rule out random page churn
+      const verifyTruthy = isNumeric(base) ? `${base} AND 2=2` : `${base}' AND '2'='2`;
+      const verifyFalsy = isNumeric(base) ? `${base} AND 2=3` : `${base}' AND '2'='3`;
+
+      const vTruthy = await sendProbe(ctx, point, verifyTruthy, 'sqli-boolean-verify');
+      const vFalsy = await sendProbe(ctx, point, verifyFalsy, 'sqli-boolean-verify');
+
+      let secondaryConfirmed = false;
+      if (vTruthy.ok && vFalsy.ok) {
+        const vTruthSim = similarity(baseline.body, vTruthy.body);
+        const vFalsySim = similarity(baseline.body, vFalsy.body);
+        const vPairSim = similarity(vTruthy.body, vFalsy.body);
+        if (vTruthSim >= noiseFloor - SAME_MARGIN && vFalsySim < noiseFloor - DIFFERENCE_MARGIN && vPairSim < noiseFloor - DIFFERENCE_MARGIN) {
+          secondaryConfirmed = true;
+        }
+      }
+
       ctx.addFinding({
         type: 'Potential SQL Injection',
         severity: SEVERITY.HIGH,
-        confidence: CONFIDENCE.MEDIUM,
+        confidence: secondaryConfirmed ? CONFIDENCE.HIGH : CONFIDENCE.MEDIUM,
         url: truthy.url,
         parameter: point.parameter,
         method: point.method,
@@ -160,14 +182,21 @@ export async function checkSqli(ctx, point) {
           `"${point.parameter}" responds to boolean logic in a way that suggests the value reaches a SQL query ` +
           `unsafely. An always-true condition (${variant.truthy}) returned the same page as the original request, ` +
           `while an always-false condition (${variant.falsy}) returned a different page. A benign control value ` +
-          `changed nothing, which rules out simple value sensitivity. The conditions are read-only - no data was ` +
-          `selected, modified or extracted.`,
+          `changed nothing, which rules out simple value sensitivity. ` +
+          (secondaryConfirmed ? 'The condition differential was confirmed with a secondary independent boolean pair. ' : '') +
+          `The conditions are read-only - no data was selected, modified or extracted.`,
         evidence:
           `Baseline stability: ${noiseFloor.toFixed(3)} (two identical requests)\n` +
           `Control (${base}zqx9) similarity to baseline: ${controlSimilarity.toFixed(3)}\n` +
-          `TRUE  (${variant.truthy}) similarity to baseline: ${truthySimilarity.toFixed(3)} [HTTP ${truthy.status}]\n` +
-          `FALSE (${variant.falsy}) similarity to baseline: ${falsySimilarity.toFixed(3)} [HTTP ${falsy.status}]\n` +
-          `TRUE vs FALSE similarity: ${pairSimilarity.toFixed(3)}`,
+          `Condition 1 TRUE  (${variant.truthy}) similarity to baseline: ${truthySimilarity.toFixed(3)} [HTTP ${truthy.status}]\n` +
+          `Condition 1 FALSE (${variant.falsy}) similarity to baseline: ${falsySimilarity.toFixed(3)} [HTTP ${falsy.status}]\n` +
+          `Condition 1 TRUE vs FALSE similarity: ${pairSimilarity.toFixed(3)}\n` +
+          `Secondary Differential Check: ${secondaryConfirmed ? 'CONFIRMED (repeatable with independent boolean conditions)' : 'Tested single pair'}`,
+        request: {
+          method: point.method,
+          url: truthy.url,
+          headers: ctx.config.headers || {},
+        },
         recommendation: RECOMMENDATION,
         references: ['https://owasp.org/www-community/attacks/Blind_SQL_Injection', 'CWE-89'],
       });
