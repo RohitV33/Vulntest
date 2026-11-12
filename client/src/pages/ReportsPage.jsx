@@ -2,6 +2,7 @@ import { useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, useInView, AnimatePresence } from 'framer-motion';
 import { useScanHistory } from '../hooks/useScanHistory.js';
+import { sortFindings } from '../utils/severity.js';
 
 function useReveal(threshold = 0.12) {
   const ref = useRef(null);
@@ -60,7 +61,7 @@ function exportJson(scan) {
 
 /* ── Report detail panel ── */
 function ReportDetail({ scan, onClose }) {
-  const findings = scan?.findings ?? [];
+  const findings = sortFindings(scan?.findings ?? []);
   const sevCounts = {
     critical: findings.filter(f => String(f.severity || '').toLowerCase() === 'critical').length,
     high:     findings.filter(f => String(f.severity || '').toLowerCase() === 'high').length,
