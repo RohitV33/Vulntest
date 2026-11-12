@@ -79,7 +79,7 @@ export function DashboardPage() {
         </div>
 
         {/* Quick Scan Input directly on Dashboard */}
-        <form onSubmit={handleQuickLaunch} className="mt-8 pt-6 border-t border-border-subtle flex flex-col sm:flex-row gap-3">
+        <form onSubmit={handleQuickLaunch} noValidate className="mt-8 pt-6 border-t border-border-subtle flex flex-col sm:flex-row gap-3">
           <div className="relative flex-1">
             <div className="absolute left-4 top-1/2 -translate-y-1/2 text-ink-muted">
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
@@ -87,7 +87,10 @@ export function DashboardPage() {
               </svg>
             </div>
             <input
-              type="url"
+              type="text"
+              autoCapitalize="none"
+              autoCorrect="off"
+              spellCheck="false"
               placeholder="Quick audit: enter target URL (e.g. http://altoro.testfire.net)..."
               value={quickUrl}
               onChange={(e) => setQuickUrl(e.target.value)}
