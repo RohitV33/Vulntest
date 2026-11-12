@@ -35,6 +35,7 @@ export function ConfigDialog({ open, config, limits, onSave, onClose }) {
   if (!open) return null;
 
   const setNumber = (key, value) => setDraft((previous) => ({ ...previous, [key]: Number(value) }));
+  const setText = (key, value) => setDraft((previous) => ({ ...previous, [key]: value }));
   const setFlag = (key, value) => setDraft((previous) => ({ ...previous, [key]: value }));
   const setCheck = (key, value) =>
     setDraft((previous) => ({ ...previous, checks: { ...previous.checks, [key]: value } }));
