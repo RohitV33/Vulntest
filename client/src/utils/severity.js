@@ -22,18 +22,25 @@ export const SEVERITY_STYLES = {
 export const severityStyle = (severity) => SEVERITY_STYLES[severity] || SEVERITY_STYLES.Info;
 
 export const severityRank = (severity) => {
-  const index = SEVERITY_ORDER.indexOf(severity);
+  const normalized = String(severity || '').trim().toLowerCase();
+  const index = SEVERITY_ORDER.findIndex((s) => s.toLowerCase() === normalized);
   return index === -1 ? SEVERITY_ORDER.length : index;
 };
 
-/** Sort findings by severity, then confidence, then type. */
-export function sortFindings(findings) {
+export const confidenceRank = (confidence) => {
+  const normalized = String(confidence || '').trim().toLowerCase();
+  const index = CONFIDENCE_ORDER.findIndex((c) => c.toLowerCase() === normalized);
+  return index === -1 ? CONFIDENCE_ORDER.length : index;
+};
+
+/** Sort findings by severity (Critical -> High -> Medium -> Low -> Info), then confidence, then type. */
+export function sortFindings(findings = []) {
   return [...findings].sort((a, b) => {
     const bySeverity = severityRank(a.severity) - severityRank(b.severity);
     if (bySeverity !== 0) return bySeverity;
-    const byConfidence = CONFIDENCE_ORDER.indexOf(a.confidence) - CONFIDENCE_ORDER.indexOf(b.confidence);
+    const byConfidence = confidenceRank(a.confidence) - confidenceRank(b.confidence);
     if (byConfidence !== 0) return byConfidence;
-    return a.type.localeCompare(b.type);
+    return String(a.type || '').localeCompare(String(b.type || ''));
   });
 }
 

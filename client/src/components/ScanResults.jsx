@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { FindingDetail } from './FindingDetail.jsx';
+import { sortFindings } from '../utils/severity.js';
 
 const SEV_CONFIG = {
   critical: { label: 'Critical', className: 'badge-critical' },
@@ -41,9 +42,11 @@ export function ScanResults({ scan, onFindingStatusChange }) {
     low:      findings.filter(f => String(f.severity || '').toLowerCase() === 'low').length,
   };
 
+  const sortedFindings = sortFindings(findings);
+
   const filtered = filter === 'all' 
-    ? findings 
-    : findings.filter(f => String(f.severity || '').toLowerCase() === filter.toLowerCase());
+    ? sortedFindings 
+    : sortedFindings.filter(f => String(f.severity || '').toLowerCase() === filter.toLowerCase());
 
   return (
     <div className="space-y-5">

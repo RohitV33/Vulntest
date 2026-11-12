@@ -86,6 +86,9 @@ export const DEFAULT_SCAN_CONFIG = {
   // so they stay opt-in and are additionally filtered for sensitive actions.
   testForms: true,
   testPostForms: false,
+  headers: {},
+  cookies: '',
+  includeSitemap: true,
 };
 
 const clamp = (value, min, max, fallback) => {
@@ -101,6 +104,21 @@ const clamp = (value, min, max, fallback) => {
 export function resolveScanConfig(input = {}) {
   const source = input && typeof input === 'object' ? input : {};
   const checks = source.checks && typeof source.checks === 'object' ? source.checks : {};
+
+  const headers = {};
+  if (source.headers && typeof source.headers === 'object') {
+    for (const [k, v] of Object.entries(source.headers)) {
+      if (typeof k === 'string' && typeof v === 'string' && k.length < 100 && v.length < 4000) {
+        headers[k.trim()] = v.trim();
+      }
+    }
+  }
+  if (typeof source.authorization === 'string' && source.authorization.trim()) {
+    headers['Authorization'] = source.authorization.trim();
+  }
+  if (typeof source.cookies === 'string' && source.cookies.trim()) {
+    headers['Cookie'] = source.cookies.trim();
+  }
 
   return {
     maxPages: clamp(source.maxPages, 1, HARD_LIMITS.maxPages, DEFAULT_SCAN_CONFIG.maxPages),
@@ -129,6 +147,8 @@ export function resolveScanConfig(input = {}) {
     maxRedirects: clamp(source.maxRedirects, 0, HARD_LIMITS.maxRedirects, DEFAULT_SCAN_CONFIG.maxRedirects),
     respectRobots: source.respectRobots !== false,
     allowSubdomains: source.allowSubdomains === true,
+    includeSitemap: source.includeSitemap !== false,
+    headers,
     checks: {
       xss: checks.xss !== false,
       sqli: checks.sqli !== false,

@@ -8,6 +8,7 @@
  */
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { eventStreamUrl, getScan, getScanStatus } from '../services/api.js';
+import { sortFindings } from '../utils/severity.js';
 
 const MAX_LOG_ENTRIES = 200;
 const POLL_INTERVAL_MS = 2_500;
@@ -125,7 +126,8 @@ export function useScanStream(scanId) {
       setScan((previous) => {
         if (!previous) return previous;
         if ((previous.findings || []).some((finding) => finding.id === event.finding.id)) return previous;
-        return { ...previous, findings: [...(previous.findings || []), event.finding] };
+        const nextFindings = sortFindings([...(previous.findings || []), event.finding]);
+        return { ...previous, findings: nextFindings };
       }),
     );
 

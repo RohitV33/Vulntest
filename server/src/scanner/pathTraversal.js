@@ -79,6 +79,11 @@ export async function checkPathTraversal(ctx, point) {
         `Matched ${fileError.label || 'filesystem'} error: ${fileError.match}` +
         (disclosedPath ? `\nDisclosed path: ${disclosedPath}` : '') +
         (index >= 0 ? `\nSnippet: ${excerpt(missing.body, index, 120)}` : ''),
+      request: {
+        method: point.method,
+        url: missing.url,
+        headers: ctx.config.headers || {},
+      },
       recommendation: RECOMMENDATION,
       references: ['https://owasp.org/www-community/attacks/Path_Traversal', 'CWE-22'],
     });
@@ -128,6 +133,11 @@ export async function checkPathTraversal(ctx, point) {
         `Baseline (${base}): HTTP ${baseline.status}\n` +
         `Bogus prefix (${marker}/${base}): HTTP ${control.status}, similarity ${controlSimilarity.toFixed(3)}\n` +
         `Self-cancelling traversal (${marker}/../${base}): HTTP ${traversal.status}, similarity ${traversalSimilarity.toFixed(3)}`,
+      request: {
+        method: point.method,
+        url: traversal.url,
+        headers: ctx.config.headers || {},
+      },
       recommendation: RECOMMENDATION,
       references: ['https://owasp.org/www-community/attacks/Path_Traversal', 'CWE-22'],
     });

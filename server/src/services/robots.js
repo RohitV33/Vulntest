@@ -18,6 +18,8 @@ function patternToRegExp(pattern) {
 
 export function parseRobots(text = '') {
   const groups = [];
+  const sitemaps = [];
+  const disallowedPaths = [];
   let current = null;
   let expectingAgent = false;
 
@@ -29,6 +31,13 @@ export function parseRobots(text = '') {
 
     const field = line.slice(0, separator).trim().toLowerCase();
     const value = line.slice(separator + 1).trim();
+
+    if (field === 'sitemap') {
+      if (value && !sitemaps.includes(value)) {
+        sitemaps.push(value);
+      }
+      continue;
+    }
 
     if (field === 'user-agent') {
       if (!current || !expectingAgent) {
@@ -46,6 +55,9 @@ export function parseRobots(text = '') {
     if (field === 'disallow' || field === 'allow') {
       // "Disallow:" with an empty value means "allow everything".
       if (field === 'disallow' && value === '') continue;
+      if (field === 'disallow' && value && !disallowedPaths.includes(value)) {
+        disallowedPaths.push(value);
+      }
       current.rules.push({ allow: field === 'allow', path: value, matcher: patternToRegExp(value) });
     } else if (field === 'crawl-delay') {
       const delay = Number.parseFloat(value);
@@ -53,15 +65,18 @@ export function parseRobots(text = '') {
     }
   }
 
+  groups.sitemaps = sitemaps;
+  groups.disallowedPaths = disallowedPaths;
   return groups;
 }
 
 export class RobotsPolicy {
   constructor(groups = [], { available = true } = {}) {
-    const matching = groups.filter((group) =>
+    const groupList = Array.isArray(groups) ? groups : [];
+    const matching = groupList.filter((group) =>
       group.agents.some((agent) => agent !== '*' && agent.length > 0 && AGENT_TOKEN.includes(agent)),
     );
-    const wildcard = groups.filter((group) => group.agents.includes('*'));
+    const wildcard = groupList.filter((group) => group.agents.includes('*'));
     const selected = matching.length > 0 ? matching : wildcard;
 
     this.rules = selected.flatMap((group) => group.rules);
@@ -69,6 +84,8 @@ export class RobotsPolicy {
       const delay = group.crawlDelay ? group.crawlDelay * 1000 : 0;
       return Math.max(max, delay);
     }, 0);
+    this.sitemaps = groups.sitemaps || [];
+    this.disallowedPaths = groups.disallowedPaths || [];
     this.available = available;
   }
 

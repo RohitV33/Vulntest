@@ -23,6 +23,51 @@ const MAX_SCRIPT_FILES = 12;
 const MAX_API_PROBES = 25;
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
+/**
+ * Deep ingestion of XML sitemaps to seed the crawl queue.
+ */
+async function ingestSitemaps(ctx, startUrl, enqueue) {
+  const origin = startUrl.origin;
+  const candidates = new Set();
+
+  if (ctx.robots?.sitemaps?.length) {
+    for (const sm of ctx.robots.sitemaps) {
+      if (ctx.policy.isAllowed(sm)) candidates.add(sm);
+    }
+  }
+  candidates.add(`${origin}/sitemap.xml`);
+  candidates.add(`${origin}/sitemap_index.xml`);
+
+  let discovered = 0;
+  for (const sitemapUrl of candidates) {
+    if (ctx.shouldStop()) break;
+    try {
+      const res = await ctx.http.get(sitemapUrl, { purpose: 'sitemap' });
+      if (!res.ok || res.status !== 200 || !res.body) continue;
+
+      const locRegex = /<loc>\s*([^<\s]+)\s*<\/loc>/gi;
+      let match;
+      while ((match = locRegex.exec(res.body)) !== null) {
+        const found = match[1].trim();
+        if (found.endsWith('.xml') && ctx.policy.isAllowed(found) && !candidates.has(found) && candidates.size < 8) {
+          candidates.add(found);
+          continue;
+        }
+        if (ctx.policy.isAllowed(found)) {
+          enqueue(found, 1);
+          discovered += 1;
+        }
+      }
+    } catch {
+      // Ignore individual sitemap retrieval failures
+    }
+  }
+
+  if (discovered > 0) {
+    ctx.log('info', `Deep ingestion discovered ${discovered} URL(s) from sitemap.`);
+  }
+}
+
 /** Endpoints whose name suggests a GET would change state - never probed. */
 const STATE_CHANGING = /(logout|signout|sign-out|delete|remove|destroy|reset|purge|drop|revoke|deactivate|unsubscribe|cancel)/i;
 
@@ -147,6 +192,11 @@ export async function crawl(ctx) {
       }
     }
   };
+
+  // Seed with sitemap URLs if configured
+  if (ctx.config.includeSitemap !== false && !ctx.shouldStop()) {
+    await ingestSitemaps(ctx, startUrl, enqueue);
+  }
 
   await Promise.all(
     new Array(ctx.config.concurrency).fill(null).map(() => worker()),

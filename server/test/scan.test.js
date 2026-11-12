@@ -232,3 +232,30 @@ test('form parsing records method, action, input names and types', () => {
     ['a:text', 'b:textarea', 'c:select', 'd:password'],
   );
 });
+
+test('resolveScanConfig parses custom authentication headers and sitemap options', () => {
+  const config = resolveScanConfig({
+    authorization: 'Bearer secret-token-123',
+    cookies: 'session=xyz456',
+    headers: { 'X-Custom-Tenant': 'tenant-99' },
+    includeSitemap: true,
+  });
+  assert.equal(config.headers['Authorization'], 'Bearer secret-token-123');
+  assert.equal(config.headers['Cookie'], 'session=xyz456');
+  assert.equal(config.headers['X-Custom-Tenant'], 'tenant-99');
+  assert.equal(config.includeSitemap, true);
+});
+
+test('robots.txt parses sitemaps directives and groups them', async () => {
+  const { parseRobots } = await import('../src/services/robots.js');
+  const txt = `
+User-agent: *
+Disallow: /private
+Sitemap: https://test.example/sitemap.xml
+Sitemap: https://test.example/sitemap2.xml
+  `;
+  const parsed = parseRobots(txt);
+  assert.ok(parsed.sitemaps.includes('https://test.example/sitemap.xml'));
+  assert.ok(parsed.sitemaps.includes('https://test.example/sitemap2.xml'));
+  assert.ok(parsed.disallowedPaths.includes('/private'));
+});

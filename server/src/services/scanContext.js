@@ -5,7 +5,7 @@
  * it for HTTP access, cancellation, findings and progress reporting. That keeps
  * the modules themselves free of transport and bookkeeping concerns.
  */
-import { HARD_LIMITS } from '../config/index.js';
+import { HARD_LIMITS, SEVERITY_ORDER } from '../config/index.js';
 import { findingId, endpointId } from '../utils/ids.js';
 import { clampEvidence } from '../utils/text.js';
 import { dedupeKey } from '../utils/url.js';
@@ -248,6 +248,12 @@ export class ScanContext {
   }
 
   finish(status = SCAN_STATUS.COMPLETED, error = null) {
+    const severityRank = (s) => {
+      const idx = SEVERITY_ORDER.findIndex((o) => o.toLowerCase() === String(s || '').toLowerCase());
+      return idx === -1 ? SEVERITY_ORDER.length : idx;
+    };
+    this.scan.findings.sort((a, b) => severityRank(a.severity) - severityRank(b.severity));
+
     this.scan.status = status;
     this.scan.completedAt = new Date().toISOString();
     this.scan.statistics.durationMs = new Date(this.scan.completedAt) - new Date(this.scan.startedAt);

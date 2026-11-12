@@ -42,6 +42,7 @@ export class ScannerHttpClient {
   constructor({ policy, config, shouldStop = () => false, onRequest = () => {} }) {
     this.policy = policy;
     this.config = config;
+    this.customHeaders = config.headers || {};
     this.shouldStop = shouldStop;
     this.onRequest = onRequest;
     this.limiter = new RateLimiter({
@@ -143,6 +144,7 @@ export class ScannerHttpClient {
               Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
               'Accept-Language': 'en-US,en;q=0.9',
               'X-Scanner': 'authorized-vulnerability-scan',
+              ...this.customHeaders,
               ...headers,
             },
           });

@@ -10,6 +10,7 @@ export function ScanLauncher({
   onAuthorizedChange,
   onStart,
   onStop,
+  onOpenConfig,
   running,
   busy,
   error,
@@ -24,16 +25,32 @@ export function ScanLauncher({
   return (
     <div className="bg-surface-card border border-border-subtle rounded-3xl p-8 shadow-xs">
       {/* Clean Single Heading */}
-      <div className="mb-6">
-        <h1 className="text-2xl sm:text-3xl font-black text-ink-primary tracking-tight">
-          {running ? 'Security Audit in Progress...' : 'Start Vulnerability Audit'}
-        </h1>
-        <p className="text-xs sm:text-sm text-ink-secondary mt-1">
-          Enter any authorized website URL to run a non-destructive security vulnerability audit.
-        </p>
+      <div className="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-2xl sm:text-3xl font-black text-ink-primary tracking-tight">
+            {running ? 'Security Audit in Progress...' : 'Start Vulnerability Audit'}
+          </h1>
+          <p className="text-xs sm:text-sm text-ink-secondary mt-1">
+            Enter any authorized website URL to run a non-destructive security vulnerability audit.
+          </p>
+        </div>
+        {onOpenConfig && (
+          <button
+            type="button"
+            disabled={running}
+            onClick={onOpenConfig}
+            className="inline-flex items-center gap-2 px-4 py-2 bg-surface-bg hover:border-ink-secondary border border-border-subtle rounded-xl text-xs font-bold text-ink-primary transition-all self-start sm:self-auto hover:bg-surface-raised active:scale-95 shadow-xs"
+          >
+            <svg className="w-4 h-4 text-ink-secondary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+            Scan Settings
+          </button>
+        )}
       </div>
 
-      <form onSubmit={submit} className="space-y-6">
+      <form onSubmit={submit} noValidate className="space-y-6">
         {/* Target URL Input */}
         <div>
           <label className="block text-xs font-bold uppercase tracking-wider text-ink-muted mb-2">
@@ -47,7 +64,10 @@ export function ScanLauncher({
             </div>
             <input
               id="target"
-              type="url"
+              type="text"
+              autoCapitalize="none"
+              autoCorrect="off"
+              spellCheck="false"
               placeholder="https://example.com"
               value={target}
               onChange={(e) => onTargetChange(e.target.value)}

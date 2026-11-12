@@ -3,10 +3,11 @@ import { Link, useSearchParams } from 'react-router-dom';
 import { ScanLauncher } from '../components/ScanLauncher.jsx';
 import { ProgressPanel } from '../components/ProgressPanel.jsx';
 import { ScanResults } from '../components/ScanResults.jsx';
+import { ConfigDialog } from '../components/ConfigDialog.jsx';
 import { useScanStream } from '../hooks/useScanStream.js';
 import { useScanHistory } from '../hooks/useScanHistory.js';
 import { getScanConfig, startScan, stopScan } from '../services/api.js';
-import { loadSettings, updateFindingStatus } from '../utils/storage.js';
+import { loadSettings, saveSettings, updateFindingStatus } from '../utils/storage.js';
 
 const ACTIVE_SCAN_KEY = 'vulnscan:activeScanId';
 
@@ -31,10 +32,34 @@ export function ScannerPage() {
 
   const [target, setTarget] = useState(initialTarget);
   const [authorized, setAuthorized] = useState(Boolean(initialTarget));
-  const [config] = useState(() => loadSettings(FALLBACK_CONFIG));
+  const [config, setConfig] = useState(() => loadSettings(FALLBACK_CONFIG));
+  const [configOpen, setConfigOpen] = useState(false);
+  const [limits, setLimits] = useState({
+    maxPages: 250,
+    maxDepth: 6,
+    concurrency: 4,
+    delayMs: 5000,
+    requestTimeoutMs: 30000,
+    maxRequests: 4000,
+    maxScanDurationMs: 1200000,
+  });
   const [starting, setStarting] = useState(false);
   const [error, setError] = useState(null);
   const [statusOverrides, setStatusOverrides] = useState({});
+
+  useEffect(() => {
+    getScanConfig()
+      .then((res) => {
+        if (res?.limits) setLimits(res.limits);
+      })
+      .catch(() => {});
+  }, []);
+
+  const handleSaveConfig = (newConfig) => {
+    setConfig(newConfig);
+    saveSettings(newConfig);
+    setConfigOpen(false);
+  };
 
   const [activeScanId, setActiveScanId] = useState(() => {
     try {
@@ -131,10 +156,19 @@ export function ScannerPage() {
         onAuthorizedChange={setAuthorized}
         onStart={onStart}
         onStop={onStop}
+        onOpenConfig={() => setConfigOpen(true)}
         running={running}
         busy={starting}
         error={error}
         config={config}
+      />
+
+      <ConfigDialog
+        open={configOpen}
+        config={config}
+        limits={limits}
+        onSave={handleSaveConfig}
+        onClose={() => setConfigOpen(false)}
       />
 
       {/* Active Scan Progress and Results */}

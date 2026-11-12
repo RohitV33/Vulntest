@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { formatDateTime } from '../utils/format.js';
 
 const SEV_BADGE = {
@@ -11,7 +11,30 @@ const SEV_BADGE = {
 
 const TRIAGE_OPTIONS = ['Open', 'Confirmed', 'False positive', 'Fixed'];
 
+function generateCurl(finding) {
+  if (!finding || !finding.url) return '';
+  const method = (finding.request?.method || finding.method || 'GET').toUpperCase();
+  const targetUrl = finding.request?.url || finding.url;
+
+  const lines = [`curl -i -X ${method} "${targetUrl}"`];
+
+  const headers = finding.request?.headers || finding.headers || {};
+  for (const [key, val] of Object.entries(headers)) {
+    if (val && typeof val === 'string') {
+      lines.push(`  -H "${key}: ${val.replace(/"/g, '\\"')}"`);
+    }
+  }
+
+  if (finding.request?.body) {
+    lines.push(`  --data "${finding.request.body.replace(/"/g, '\\"')}"`);
+  }
+
+  return lines.join(' \\\n');
+}
+
 export function FindingDetail({ finding, onClose, onStatusChange }) {
+  const [copied, setCopied] = useState(false);
+
   useEffect(() => {
     if (!finding) return undefined;
     const onKeyDown = (event) => {
@@ -22,6 +45,26 @@ export function FindingDetail({ finding, onClose, onStatusChange }) {
   }, [finding, onClose]);
 
   if (!finding) return null;
+
+  const handleCopyCurl = async () => {
+    const cmd = generateCurl(finding);
+    try {
+      if (navigator?.clipboard?.writeText) {
+        await navigator.clipboard.writeText(cmd);
+      } else {
+        const textarea = document.createElement('textarea');
+        textarea.value = cmd;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+      }
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      // fallback
+    }
+  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
@@ -105,6 +148,39 @@ export function FindingDetail({ finding, onClose, onStatusChange }) {
             <p className="text-[10px] font-bold uppercase tracking-wider text-ink-muted mb-1.5">HTTP Evidence / Request</p>
             <pre className="overflow-x-auto whitespace-pre-wrap rounded-2xl bg-surface-bg border border-border-subtle p-4 font-mono text-[11px] leading-relaxed text-ink-secondary">
               {finding.evidence || 'No raw evidence logged.'}
+            </pre>
+          </div>
+
+          {/* Proof of Concept / Reproduce with cURL */}
+          <div>
+            <div className="flex items-center justify-between mb-1.5">
+              <p className="text-[10px] font-bold uppercase tracking-wider text-ink-muted">
+                Proof of Concept / Reproduce with cURL
+              </p>
+              <button
+                type="button"
+                onClick={handleCopyCurl}
+                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold bg-surface-bg border border-border-subtle hover:border-ink-secondary text-ink-primary transition-all active:scale-95 shadow-xs"
+              >
+                {copied ? (
+                  <>
+                    <svg className="w-3.5 h-3.5 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                    </svg>
+                    <span className="text-emerald-500">Copied!</span>
+                  </>
+                ) : (
+                  <>
+                    <svg className="w-3.5 h-3.5 text-ink-secondary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                    </svg>
+                    <span>Copy cURL</span>
+                  </>
+                )}
+              </button>
+            </div>
+            <pre className="overflow-x-auto whitespace-pre-wrap rounded-2xl bg-surface-bg border border-border-subtle p-4 font-mono text-[11px] leading-relaxed text-ink-primary select-all">
+              {generateCurl(finding)}
             </pre>
           </div>
 

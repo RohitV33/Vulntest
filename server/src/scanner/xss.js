@@ -238,6 +238,13 @@ export async function checkXss(ctx, point) {
   if (!plain.ok || !plain.body) return;
   if (!plain.body.toLowerCase().includes(token)) return;
 
+  // Verification: If the response is non-HTML (e.g. JSON or text), modern browsers will not execute script markup.
+  const isHtml = /html|xhtml/i.test(plain.contentType) || /^\s*<(!doctype|html)/i.test(plain.body);
+  if (!isHtml) {
+    reportEncodedReflection(ctx, point, plain, token, 'Content-Type is non-HTML, mitigating browser markup execution.');
+    return;
+  }
+
   // Step 2 - do markup-significant characters survive, and where?
   const probeValue = `${token}${PROBE_SUFFIX}`;
   const probe = await sendProbe(ctx, point, probeValue, 'xss-context');
@@ -290,13 +297,19 @@ export async function checkXss(ctx, point) {
       `Context: ${best.context.context} (${best.context.detail})\n` +
       `Unencoded characters: ${best.surviving.join(' ') || 'none'}\n` +
       `Response snippet: ${excerpt(body, best.index, 110)}`,
+    request: {
+      method: point.method,
+      url: probe.url,
+      headers: ctx.config.headers || {},
+      body: point.method === 'POST' ? `${point.parameter}=${encodeURIComponent(probeValue)}` : null,
+    },
     recommendation: RECOMMENDATION,
     references: ['https://owasp.org/www-community/attacks/xss/', 'CWE-79'],
   });
 }
 
 /** Reflection with correct encoding: worth knowing about, not a vulnerability. */
-function reportEncodedReflection(ctx, point, response, token) {
+function reportEncodedReflection(ctx, point, response, token, extraNote = '') {
   const index = findOccurrences(response.body, token, 1)[0];
   ctx.addFinding({
     type: 'Reflected Parameter Value',
@@ -308,8 +321,14 @@ function reportEncodedReflection(ctx, point, response, token) {
     description:
       `The value of "${point.parameter}" is echoed back in the response, but the markup-significant characters ` +
       `sent with the probe were encoded or filtered. This is expected, safe behaviour and is reported only as an ` +
-      `inventory of user-controlled output. It is not evidence of cross-site scripting.`,
+      `inventory of user-controlled output. It is not evidence of cross-site scripting.` +
+      (extraNote ? ` Note: ${extraNote}` : ''),
     evidence: index === undefined ? `Canary ${token} reflected.` : excerpt(response.body, index, 110),
+    request: {
+      method: point.method,
+      url: response.url,
+      headers: ctx.config.headers || {},
+    },
     recommendation:
       'No action required if the encoding is applied by the framework for every context. Verify that the same ' +
       'encoding is used wherever this parameter is rendered (HTML, attributes, JavaScript, URLs).',
