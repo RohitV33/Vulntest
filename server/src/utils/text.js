@@ -84,7 +84,7 @@ export function excerpt(body = '', index = 0, radius = 90) {
 }
 
 /** Trim evidence to a sane size before it is stored or sent to the browser. */
-export const clampEvidence = (value, maxLength = 600) => {
+export const clampEvidence = (value, maxLength = 4000) => {
   const text = String(value ?? '');
   return text.length <= maxLength ? text : `${text.slice(0, maxLength)}…`;
 };

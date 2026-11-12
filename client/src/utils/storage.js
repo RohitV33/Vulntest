@@ -6,6 +6,8 @@
  * credentials, and cookie values are redacted server-side before they ever
  * reach a finding.
  */
+import { sortFindings } from './severity.js';
+
 const HISTORY_KEY = 'vulnscan:history:v1';
 const SETTINGS_KEY = 'vulnscan:settings:v1';
 const THEME_KEY = 'vulnscan:theme';
@@ -16,7 +18,7 @@ const LIMITS = {
   findings: 300,
   endpoints: 500,
   logEntries: 60,
-  evidenceChars: 1500,
+  evidenceChars: 4000,
 };
 
 const readRaw = (key, fallback) => {
@@ -49,10 +51,12 @@ export function toStoredScan(scan) {
     config: scan.config,
     statistics: scan.statistics,
     error: scan.error ?? null,
-    findings: (scan.findings || []).slice(0, LIMITS.findings).map((finding) => ({
-      ...finding,
-      evidence: String(finding.evidence ?? '').slice(0, LIMITS.evidenceChars),
-    })),
+    findings: sortFindings(
+      (scan.findings || []).slice(0, LIMITS.findings).map((finding) => ({
+        ...finding,
+        evidence: String(finding.evidence ?? '').slice(0, LIMITS.evidenceChars),
+      })),
+    ),
     endpoints: (scan.endpoints || []).slice(0, LIMITS.endpoints),
     log: (scan.log || []).slice(-LIMITS.logEntries),
     savedAt: new Date().toISOString(),
